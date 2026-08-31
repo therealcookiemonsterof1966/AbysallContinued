@@ -1,3 +1,73 @@
+getgenv().Abysall = {
+    Legit = true
+}
+
+local BaseUrl = "https://raw.githubusercontent.com/bocaj111004/Abysall/refs/heads/main/"
+
+getgenv().Abysall = {
+    Environment = loadstring(game:HttpGet(BaseUrl .. "Components/Environment.luau"))(),
+    ESPLibrary = loadstring(game:HttpGet(BaseUrl .. "Components/ESP.luau"))(),
+    Legit = true
+}
+
+local Abysall = getgenv().Abysall
+
+local function CloneReference(Object)
+    if Abysall and Abysall.Environment.cloneref then
+        return Abysall.Environment.cloneref(Object)
+    end
+    return Object
+end
+
+local Services = setmetatable({}, {
+    __index = function(Self, Name)
+        return CloneReference(game:GetService(Name))
+    end
+})
+
+if Abysall.Environment.writefile and Abysall.Environment.readfile then
+    if not Abysall.Environment.isfile("Abysall/UserData.json") then
+        local Data = {
+            TotalExecutions = 0,
+            UILibrary = "Obsidian"
+        }
+
+        Abysall.Environment.writefile(
+            "Abysall/UserData.json",
+            Services.HttpService:JSONEncode(Data)
+        )
+    end
+
+    local UserData = Abysall.Environment.readfile("Abysall/UserData.json")
+    local Decoded = Services.HttpService:JSONDecode(UserData)
+
+    if not Decoded.TotalExecutions then
+        Decoded.TotalExecutions = 0
+    end
+
+    Decoded.TotalExecutions = Decoded.TotalExecutions + 1
+
+    if not Decoded.UILibrary then
+        Decoded.UILibrary = "Obsidian"
+    end
+
+    Abysall.TotalExecutions = Decoded.TotalExecutions
+    Abysall.UILibrary = Decoded.UILibrary
+
+    Abysall.Environment.writefile(
+        "Abysall/UserData.json",
+        Services.HttpService:JSONEncode(Decoded)
+    )
+end
+
+Abysall.Interface = loadstring(game:HttpGet(
+    BaseUrl .. "Components/Interface.luau"
+))()
+
+Abysall.Analytics = loadstring(game:HttpGet(
+    BaseUrl .. "Components/Analytics.luau"
+))()
+
 local LoadStart = tick()
 Abysall.SavePath = "Doors/Game"
 
@@ -20,6 +90,20 @@ local Services = setmetatable({}, {
 		return CloneReference(game:GetService(Name))
 	end
 })
+
+
+
+-- archives locals
+local DroneWalkedIntoParents = {}
+local DroneConnection = nil
+local DronesStampedeParents = {}
+local DronesStampedeConnection = nil
+local AlmaConnection = nil
+local ScribblesHook = nil
+local WaterParts = {}
+local WaterConnection = nil
+
+
 
 local Globals = {}
 local Connections = {}
@@ -1260,6 +1344,11 @@ Groupboxes.Self_Misc:AddButton({
 })
 
 Groupboxes.Exploits_Bypass = Tabs.Exploits:AddLeftGroupbox("Bypass")
+Groupboxes.Exploits_Bypass:AddToggle("BypassWater", { Text = "Bypass Electric Water", Default = false, Tooltip = "Prevents electric water from hurting you." })
+Groupboxes.Exploits_Bypass:AddToggle("BypassAlma", { Text = "Bypass Alma", Default = false, Tooltip = "Prevents 'Alma' from spawning." })
+Groupboxes.Exploits_Bypass:AddToggle("BypassScribbles", { Text = "Bypass Scribbles", Default = false, Tooltip = "Prevents 'Scribbles' from attacking you." })
+Groupboxes.Exploits_Bypass:AddToggle("BypassDronesStampede",         { Text = "Bypass Drones Stampede",           Default = false, Tooltip = "Prevents 'The Drones Stampede' from attacking you." })
+Groupboxes.Exploits_Bypass:AddToggle("BypassDrones",         { Text = "Bypass Drones",           Default = false, Tooltip = "Prevents 'Drones' from attacking you." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassGiggle",         { Text = "Bypass Giggle",           Default = false, Tooltip = "Prevents 'Giggle' from attacking you." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassDupe",           { Text = "Bypass Dupe",             Default = false, Tooltip = "Prevents you from open 'Dupe' fake doors." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassEyes",           { Text = "Bypass Eyes",             Default = false, Tooltip = "Prevents 'Eyes' from hurting you." })
@@ -1273,6 +1362,155 @@ Groupboxes.Exploits_Bypass:AddToggle("BypassSnare",          { Text = "Bypass Sn
 Groupboxes.Exploits_Bypass:AddToggle("BypassBanana",         { Text = "Bypass Banana",           Default = false, Tooltip = "Prevents 'Banana Peel' from slipping you up (sometimes doesn't work)." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassJeff",           { Text = "Bypass Jeff",             Default = false, Tooltip = "Prevents 'Jeff the Killer' from stabbing you (sometimes doesn't work)." })
 
+
+Toggles.BypassWater:OnChanged(function(Value)
+	if WaterConnection then
+		WaterConnection:Disconnect()
+		WaterConnection = nil
+	end
+
+	if Value then
+		local function ProcessRoom(room)
+			if not tonumber(room.Name) then return end
+			local Water = room:FindFirstChild("Water")
+			if not Water or WaterParts[Water] then return end
+
+			local Part = Instance.new("Part")
+			Part.Name = "WaterBypass"
+			Part.Anchored = true
+			Part.CanCollide = true
+			Part.CanTouch = false
+			Part.CanQuery = false
+			Part.Transparency = 0.25
+			Part.Color = Color3.fromRGB(0, 150, 255)
+			Part.Material = Enum.Material.ForceField
+
+			if Water:IsA("BasePart") then
+				Part.Size = Water.Size + Vector3.new(0, 0.5, 0)
+				Part.CFrame = Water.CFrame * CFrame.new(0, 0.25, 0)
+			elseif Water:IsA("Model") then
+				local cf, size = Water:GetBoundingBox()
+				Part.Size = size + Vector3.new(0, 0.5, 0)
+				Part.CFrame = cf * CFrame.new(0, 0.25, 0)
+			else
+				Part.Size = Vector3.new(10, 1.5, 10)
+				Part.CFrame = Water:GetPivot() * CFrame.new(0, 0.25, 0)
+			end
+
+			Part.Parent = room
+			WaterParts[Water] = Part
+		end
+
+		for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
+			ProcessRoom(room)
+		end
+
+		WaterConnection = workspace.CurrentRooms.ChildAdded:Connect(function(room)
+			task.wait(0.5)
+			ProcessRoom(room)
+		end)
+	else
+		for _, Part in pairs(WaterParts) do
+			if Part then
+				Part:Destroy()
+			end
+		end
+		table.clear(WaterParts)
+	end
+end)
+Toggles.BypassAlma:OnChanged(function(Value)
+	if AlmaConnection then
+		AlmaConnection:Disconnect()
+		AlmaConnection = nil
+	end
+
+	if Value then
+		for _, child in ipairs(workspace:GetChildren()) do
+			if child.Name == "Alma" then
+				child:Destroy()
+			end
+		end
+
+		AlmaConnection = workspace.ChildAdded:Connect(function(child)
+			if child.Name == "Alma" then
+				child:Destroy()
+			end
+		end)
+	end
+end)
+Toggles.BypassScribbles:OnChanged(function(Value)
+	if Value then
+		if not ScribblesHook then
+			ScribblesHook = hookmetamethod(game, "__index", newcclosure(function(self, key)
+				if not checkcaller() and typeof(self) == "Instance" and self.Parent and self.Parent.Name == "Scribbles" then
+					return nil
+				end
+				return ScribblesHook(self, key)
+			end))
+		end
+	end
+end)
+Toggles.BypassDronesStampede:OnChanged(function(Value)
+	Functions.Notify({Title = "This is an experimental feature, it might not work."})
+	if DronesStampedeConnection then
+		DronesStampedeConnection:Disconnect()
+		DronesStampedeConnection = nil
+	end
+
+	if Value then
+		for _, child in ipairs(workspace:GetChildren()) do
+			if child.Name == "DronesStampede" then
+				child:Destroy()
+			end
+		end
+
+		DronesStampedeConnection = workspace.ChildAdded:Connect(function(child)
+			if child.Name == "DronesStampede" then
+				child:Destroy()
+			end
+		end)
+	end
+end)
+Toggles.BypassDrones:OnChanged(function(Value)
+	local RS = game:GetService("ReplicatedStorage")
+
+	local function ProcessDrones(drones)
+		local WalkedInto = drones:FindFirstChild("WalkedInto") or drones:WaitForChild("WalkedInto", 3)
+		if WalkedInto and not DroneWalkedIntoParents[WalkedInto] then
+			DroneWalkedIntoParents[WalkedInto] = drones
+			WalkedInto.Parent = RS
+		end
+	end
+
+	if Value then
+		for _, child in ipairs(workspace:GetChildren()) do
+			if child.Name == "Drones" then
+				ProcessDrones(child)
+			end
+		end
+
+		if DroneConnection then
+			DroneConnection:Disconnect()
+		end
+		DroneConnection = workspace.ChildAdded:Connect(function(child)
+			if child.Name == "Drones" then
+				ProcessDrones(child)
+			end
+		end)
+	else
+		for WalkedInto, originalParent in pairs(DroneWalkedIntoParents) do
+			if WalkedInto and WalkedInto.Parent and originalParent and originalParent.Parent then
+				WalkedInto.Parent = originalParent
+			end
+		end
+		table.clear(DroneWalkedIntoParents)
+
+		if DroneConnection then
+			DroneConnection:Disconnect()
+			DroneConnection = nil
+		end
+	end
+end)
 Toggles.BypassGiggle:OnChanged(function(Value)
 	for _, Object in Objects.Entities do
 		if Object.Name == "GiggleCeiling" then
@@ -4232,6 +4470,15 @@ Functions.TriggerPrompt = function(Prompt)
 	if (Prompt.Parent.Name == "LibraryHintPaper" or Prompt.Parent.Name == "PickupItem") and (Functions.HasItem("LibraryHintPaper") or Functions.HasItem("LibraryHintPaperHard")) then return end
 	if Prompt.Parent.Name == "AlarmClock" and Functions.HasItem("AlarmClock") then return end
 	if Prompt.Parent.Name == "KeyObtainFake" or Prompt.Parent.Name == "TithingPlate" then return end
+
+    -- archives
+	if Prompt.Parent.Parent.Name == "ArchivesLargePrinter" then return end
+	if Prompt.Name == "TrashcanPrompt" then return end
+	if Prompt.Parent.Name == "Keyboard" then return end
+	if Prompt.Name == "CartPrompt" or Prompt.Parent.Parent.Name == "ArchivesOfficeChair" then return end
+	if Prompt.Parent.Name == "ArchivesTerminal" then return end
+	if Prompt.Name == "VendorPrompt" then return end
+    if Prompt.Parent.Name == "SeatPart" or Prompt.Name == "SeatPrompt" then return end
 
 	Functions.FirePrompt(Prompt)
 	TriggerDebounce = true
