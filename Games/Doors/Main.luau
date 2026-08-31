@@ -1443,18 +1443,18 @@ Toggles.BypassAlma:OnChanged(function(Value)
 		end)
 	end
 end)
-Toggles.BypassScribbles:OnChanged(function(Value)
-	if Value then
-		if not ScribblesHook then
-			ScribblesHook = hookmetamethod(game, "__index", newcclosure(function(self, key)
-				if not checkcaller() and typeof(self) == "Instance" and self.Parent and self.Parent.Name == "Scribbles" then
-					return nil
-				end
-				return ScribblesHook(self, key)
-			end))
-		end
-	end
-end)
+-- Toggles.BypassScribbles:OnChanged(function(Value)
+--	if Value then
+--		if not ScribblesHook then
+--			ScribblesHook = hookmetamethod(game, "__index", newcclosure(function(self, key)
+--				if not checkcaller() and typeof(self) == "Instance" and self.Parent and self.Parent.Name == "Scribbles" then
+--					return nil
+--				end
+--				return ScribblesHook(self, key)
+--			end))
+--		end
+--	end
+--end)
 Toggles.BypassDronesStampede:OnChanged(function(Value)
 	Functions.Notify({Title = "This is an experimental feature, it might not work."})
 	if DronesStampedeConnection then
