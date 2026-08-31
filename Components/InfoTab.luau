@@ -8,6 +8,7 @@ return function(Window)
         "<font color='rgb(0, 255, 0)'>+ Added Anti Alma</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Anti Droned Stampede (Experimental)</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Anti Electric Water</font>",
+        "<font color='rgb(0, 255, 0)'>+ Added A Toggle For Custom Fov</font>",
 
         -- Red = Removed
         "<font color='rgb(255, 0, 0)'>- Removed Firebacon</font>",
