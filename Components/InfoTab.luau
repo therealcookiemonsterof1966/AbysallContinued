@@ -3,6 +3,7 @@ return function(Window)
         "31/8/2026",
 
         -- Green = Added
+        "<font color='rgb(0, 255, 0)'>+ Added Forget Me Not Skip</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Anti Drones</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Anti Alma</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Anti Droned Stampede (Experimental)</font>",
