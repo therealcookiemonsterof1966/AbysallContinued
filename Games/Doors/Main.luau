@@ -106,6 +106,13 @@ local AlmaConnection = nil
 local ScribblesHook = nil
 local WaterParts = {}
 local WaterConnection = nil
+local ForgetMeNotConnection
+local ForgetMeNotSavedRoom
+local ForgetMeNotProcessing = {}
+local ForgetMeNotSolvedRooms = {}
+local ForgetMeNotStorage
+local ForgetMeNotRoomCount = 0
+local ForgetMeNotHasSolved = false
 
 
 
@@ -151,6 +158,10 @@ Functions.CheckCompatability = function(Array)
 end
 
 local Entities = {
+	["BashMoving"] = {
+		Alias = "Bash",
+		NotifyMessage = { Title = "Entity 'Bash' has spawned.", Body = "Find a hiding spot."}
+	},
 	["RushMoving"] = {
 		Alias = "Rush",
 		NotifyMessage = { Title = "Entity 'Rush' has spawned.", Body = "Find a hiding spot." }
@@ -840,6 +851,7 @@ end
 
 local EntityDistances = {
 	["RushMoving"]    = 85,
+	["BashMoving"]    = 95,
 	["AmbushMoving"]  = 150,
 	["A60"]           = 125,
 	["A120"]          = 85,
@@ -1347,12 +1359,15 @@ Groupboxes.Self_Misc:AddButton({
 	end
 })
 
-Groupboxes.Exploits_Bypass = Tabs.Exploits:AddLeftGroupbox("Bypass")
+Groupboxes.Exploits_Bypass = Tabs.Exploits:AddLeftGroupbox("Bypass / Solve")
+Groupboxes.Exploits_Bypass:AddToggle("ForgetMeNotSolver", { Text = "Forget Me Not Skipper", Default = false, Tooltip = "Automatically Skippes Forget Me Not doors." })
+Groupboxes.Exploits_Bypass:AddDivider()
 Groupboxes.Exploits_Bypass:AddToggle("BypassWater", { Text = "Bypass Electric Water", Default = false, Tooltip = "Prevents electric water from hurting you." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassAlma", { Text = "Bypass Alma", Default = false, Tooltip = "Prevents 'Alma' from spawning." })
 -- Groupboxes.Exploits_Bypass:AddToggle("BypassScribbles", { Text = "Bypass Scribbles", Default = false, Tooltip = "Prevents 'Scribbles' from attacking you." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassDronesStampede",         { Text = "Bypass Drones Stampede",           Default = false, Tooltip = "Prevents 'The Drones Stampede' from attacking you." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassDrones",         { Text = "Bypass Drones",           Default = false, Tooltip = "Prevents 'Drones' from attacking you." })
+Groupboxes.Exploits_Bypass:AddDivider()
 Groupboxes.Exploits_Bypass:AddToggle("BypassGiggle",         { Text = "Bypass Giggle",           Default = false, Tooltip = "Prevents 'Giggle' from attacking you." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassDupe",           { Text = "Bypass Dupe",             Default = false, Tooltip = "Prevents you from open 'Dupe' fake doors." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassEyes",           { Text = "Bypass Eyes",             Default = false, Tooltip = "Prevents 'Eyes' from hurting you." })
@@ -1367,8 +1382,129 @@ Groupboxes.Exploits_Bypass:AddToggle("BypassBanana",         { Text = "Bypass Ba
 Groupboxes.Exploits_Bypass:AddToggle("BypassJeff",           { Text = "Bypass Jeff",             Default = false, Tooltip = "Prevents 'Jeff the Killer' from stabbing you (sometimes doesn't work)." })
 
 
+Toggles.ForgetMeNotSolver:OnChanged(function(Value)
+	if ForgetMeNotConnection then
+		ForgetMeNotConnection:Disconnect()
+		ForgetMeNotConnection = nil
+	end
+
+	if not Value then
+		return
+	end
+
+	local function GetCharacter()
+		return game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+	end
+
+	local function GetNextRoom(Number)
+		local NextRoom
+
+		repeat
+			task.wait(0.1)
+
+			for _, Room in ipairs(workspace.CurrentRooms:GetChildren()) do
+				local RoomNumber = tonumber(Room.Name)
+
+				if RoomNumber and RoomNumber > Number then
+					if not NextRoom or RoomNumber < tonumber(NextRoom.Name) then
+						NextRoom = Room
+					end
+				end
+			end
+		until NextRoom
+
+		return NextRoom
+	end
+
+	local function Run(Room)
+		if ForgetMeNotProcessing[Room] then
+			return
+		end
+
+		ForgetMeNotProcessing[Room] = true
+
+		task.wait(2)
+
+		if not Room.Parent then
+			ForgetMeNotProcessing[Room] = nil
+			return
+		end
+
+		if not Room:FindFirstChild("ForgetMeNotVineDoors", true) then
+			ForgetMeNotProcessing[Room] = nil
+			return
+		end
+
+		local NextRoom = GetNextRoom(tonumber(Room.Name))
+
+		if not NextRoom then
+			ForgetMeNotProcessing[Room] = nil
+			return
+		end
+
+		local Door = NextRoom:WaitForChild("Door", 10)
+		local Hidden = Door and Door:WaitForChild("Hidden", 10)
+
+		if not Door or not Hidden then
+			ForgetMeNotProcessing[Room] = nil
+			return
+		end
+
+		local Opened = Door:GetAttribute("Opened") == true
+
+		local OpenedConnection = Door:GetAttributeChangedSignal("Opened"):Connect(function()
+			Opened = Door:GetAttribute("Opened") == true
+		end)
+
+		while NextRoom.Parent and not Opened do
+			local Character = GetCharacter()
+
+			if Character then
+				if Hidden:IsA("BasePart") then
+					Character:PivotTo(Hidden.CFrame)
+				elseif Hidden:IsA("Model") then
+					Character:PivotTo(Hidden:GetPivot())
+				end
+			end
+
+			pcall(function()
+				Door.ClientOpen:Fire()
+			end)
+
+			pcall(function()
+				Door.ClientOpen:FireServer()
+			end)
+
+			task.wait()
+		end
+
+		OpenedConnection:Disconnect()
+		ForgetMeNotProcessing[Room] = nil
+	end
+
+	ForgetMeNotConnection = workspace.CurrentRooms.ChildAdded:Connect(function(Room)
+		if not tonumber(Room.Name) then
+			return
+		end
+
+		task.spawn(function()
+			task.wait(2)
+
+			if Room:FindFirstChild("ForgetMeNotVineDoors", true) then
+				task.spawn(Run, Room)
+			end
+		end)
+	end)
+
+	for _, Room in ipairs(workspace.CurrentRooms:GetChildren()) do
+		if tonumber(Room.Name) and Room:FindFirstChild("ForgetMeNotVineDoors", true) then
+			task.spawn(Run, Room)
+		end
+	end
+end)
 Toggles.BypassWater:OnChanged(function(Value)
 	Functions.Notify({Title = "PositionSpoof Will Break This!."})
+
 	if WaterConnection then
 		WaterConnection:Disconnect()
 		WaterConnection = nil
@@ -1377,6 +1513,9 @@ Toggles.BypassWater:OnChanged(function(Value)
 	if Value then
 		local function ProcessRoom(room)
 			if not tonumber(room.Name) then return end
+
+			task.wait(2)
+
 			local Water = room:FindFirstChild("Water")
 			if not Water or WaterParts[Water] then return end
 
@@ -1407,12 +1546,11 @@ Toggles.BypassWater:OnChanged(function(Value)
 		end
 
 		for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
-			ProcessRoom(room)
+			task.spawn(ProcessRoom, room)
 		end
 
 		WaterConnection = workspace.CurrentRooms.ChildAdded:Connect(function(room)
-			task.wait(0.5)
-			ProcessRoom(room)
+			task.spawn(ProcessRoom, room)
 		end)
 	else
 		for _, Part in pairs(WaterParts) do
@@ -1420,6 +1558,7 @@ Toggles.BypassWater:OnChanged(function(Value)
 				Part:Destroy()
 			end
 		end
+
 		table.clear(WaterParts)
 	end
 end)
@@ -1947,7 +2086,7 @@ Groupboxes.Visuals_EntitySettings = Groupboxes.Visuals_RightTab:AddTab("Settings
 
 Groupboxes.Visuals_Entities:AddDropdown("EntityList", {
 	Text = "Entity List",
-	Values = { "Rush","Ambush","Eyes","Halt","Blitz","Lookman","Gloombat Swarm","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Monument","AR0xMBUSH","RNIUSHCG==" },
+	Values = { "Rush","Bash","Ambush","Eyes","Halt","Blitz","Lookman","Gloombat Swarm","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Monument","AR0xMBUSH","RNIUSHCG==" },
 	Multi = true, AllowNull = true
 })
 Groupboxes.Visuals_Entities:AddToggle("NotifyEntities",    { Text = "Notify Entities",    Default = false, Tooltip = "Sends a notification when an entity spawns." })
