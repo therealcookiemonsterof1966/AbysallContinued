@@ -3,12 +3,12 @@ return function(Window)
         "31/8/2026",
 
         -- Green = Added
-        "<font color='rgb(0, 255, 0)'>+ Added Anti Scribble</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Anti Drones</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Anti Alma</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Anti Droned Stampede (Experimental)</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Anti Electric Water</font>",
         "<font color='rgb(0, 255, 0)'>+ Added A Toggle For Custom Fov</font>",
+        "<font color='rgb(0, 255, 0)'>+ Added More That I Will Mention Later</font>",
 
         -- Red = Removed
         "<font color='rgb(255, 0, 0)'>- Removed Firebacon</font>",
