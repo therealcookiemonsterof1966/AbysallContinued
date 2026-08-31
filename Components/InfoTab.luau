@@ -1,6 +1,6 @@
 return function(Window)
     local LatestChangelog = {
-        "11/7/2026",
+        "31/8/2026",
 
         -- Green = Added
         "<font color='rgb(0, 255, 0)'>+ Added Anti Scribble</font>",
