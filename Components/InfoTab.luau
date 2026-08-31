@@ -3,17 +3,17 @@ return function(Window)
         "11/7/2026",
 
         -- Green = Added
-        "<font color='rgb(0, 255, 0)'>+ Added Entity ESP Selection</font>",
-        "<font color='rgb(0, 255, 0)'>+ Added Item Notifier</font>",
-        "<font color='rgb(0, 255, 0)'>+ Added Remove Surge</font>",
-        "<font color='rgb(0, 255, 0)'>+ Added Death Farm</font>",
-        "<font color='rgb(0, 255, 0)'>+ Fixed Some Broken Features (Bypass Eyes, etc)</font>",
+        "<font color='rgb(0, 255, 0)'>+ Added Anti Scribble</font>",
+        "<font color='rgb(0, 255, 0)'>+ Added Anti Drones</font>",
+        "<font color='rgb(0, 255, 0)'>+ Added Anti Alma</font>",
+        "<font color='rgb(0, 255, 0)'>+ Added Anti Droned Stampede (Experimental)</font>",
+        "<font color='rgb(0, 255, 0)'>+ Added Anti Electric Water</font>",
 
         -- Red = Removed
-        -- "<font color='rgb(255, 0, 0)'>- Removed Example</font>",
+        -- "<font color='rgb(255, 0, 0)'>- Removed Firebacon</font>",
 
         -- Yellow = Changed
-        -- "<font color='rgb(255, 255, 0)'>~ Changed Example</font>",
+        "<font color='rgb(255, 255, 0)'>~ Improved Auto Interact Blacklist for Archives</font>",
     }
     local function CloneReference(Object)
         if Abysall and Abysall.Environment.cloneref then
