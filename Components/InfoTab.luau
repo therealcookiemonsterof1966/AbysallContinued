@@ -10,7 +10,7 @@ return function(Window)
         "<font color='rgb(0, 255, 0)'>+ Added Anti Electric Water</font>",
 
         -- Red = Removed
-        -- "<font color='rgb(255, 0, 0)'>- Removed Firebacon</font>",
+        "<font color='rgb(255, 0, 0)'>- Removed Firebacon</font>",
 
         -- Yellow = Changed
         "<font color='rgb(255, 255, 0)'>~ Improved Auto Interact Blacklist for Archives</font>",
