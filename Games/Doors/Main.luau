@@ -21,7 +21,7 @@ end
 
 local Services = setmetatable({}, {
     __index = function(Self, Name)
-        return CloneReference(game:GetService(Name))`
+        return CloneReference(game:GetService(Name))
     end
 })
 
@@ -1794,6 +1794,7 @@ Groupboxes.Visuals_LeftTab = Tabs.Visuals:AddLeftTabbox("Camera / Effects")
 Groupboxes.Visuals_Camera = Groupboxes.Visuals_LeftTab:AddTab("Camera")
 Groupboxes.Visuals_Camera:AddToggle("AmbientToggle", { Text = "Ambient", Default = false, Tooltip = "Changes the lighting color to the specified value." })
 Groupboxes.Visuals_Camera:AddSlider("FieldOfView", { Text = "Field of View", Min = 1, Max = 120, Default = 70, Rounding = 0 })
+Groupboxes.Visuals_Camera:AddToggle("FOVToggle", {    Text = "Custom FOV",    Default = false,    Tooltip = "Only applies the Field of View slider when enabled." })
 Groupboxes.Visuals_Camera:AddDivider()
 Groupboxes.Visuals_Camera:AddToggle("RemoveCameraShake", {
 	Text = "Remove Camera Shake", Default = false, Tooltip = "Prevents the camera from shaking.",
@@ -3417,11 +3418,13 @@ Functions.HandleCharacter = function(NewCharacter)
 			Camera.CFrame = CamPosition
 		end
 
-		if Main_Game then
-			task.wait()
-			Main_Game.fovtarget = Options.FieldOfView.Value
-		else
-			Camera.FieldOfView = Options.FieldOfView.Value
+		if Toggles.FOVToggle.Value then
+			if Main_Game then
+				task.wait()
+				Main_Game.fovtarget = Options.FieldOfView.Value
+			else
+				Camera.FieldOfView = Options.FieldOfView.Value
+			end
 		end
 
 		if Toggles.RemoveClosetDelay.Value
@@ -4472,6 +4475,7 @@ Functions.TriggerPrompt = function(Prompt)
 	if Prompt.Parent.Name == "KeyObtainFake" or Prompt.Parent.Name == "TithingPlate" then return end
 
     -- archives
+	if Prompt.Name == "ManualOpenPrompt" then return end
 	if Prompt.Parent.Parent.Name == "ArchivesLargePrinter" then return end
 	if Prompt.Name == "TrashcanPrompt" then return end
 	if Prompt.Parent.Name == "Keyboard" then return end
