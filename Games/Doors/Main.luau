@@ -21,7 +21,7 @@ end
 
 local Services = setmetatable({}, {
     __index = function(Self, Name)
-        return CloneReference(game:GetService(Name))
+        return CloneReference(game:GetService(Name))`
     end
 })
 
@@ -1096,7 +1096,7 @@ Functions.GetRandomCode = function()
 end
 
 local Window = Library:CreateWindow({
-	Title = "Abysall Hub",
+	Title = "Abysall Hub Continued",
 	Footer = "dsc.gg/abysallhubcontinued",
 	NotifySide = "Right",
 	ShowCustomCursor = false,
