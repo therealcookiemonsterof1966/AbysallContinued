@@ -1350,7 +1350,7 @@ Groupboxes.Self_Misc:AddButton({
 Groupboxes.Exploits_Bypass = Tabs.Exploits:AddLeftGroupbox("Bypass")
 Groupboxes.Exploits_Bypass:AddToggle("BypassWater", { Text = "Bypass Electric Water", Default = false, Tooltip = "Prevents electric water from hurting you." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassAlma", { Text = "Bypass Alma", Default = false, Tooltip = "Prevents 'Alma' from spawning." })
-Groupboxes.Exploits_Bypass:AddToggle("BypassScribbles", { Text = "Bypass Scribbles", Default = false, Tooltip = "Prevents 'Scribbles' from attacking you." })
+-- Groupboxes.Exploits_Bypass:AddToggle("BypassScribbles", { Text = "Bypass Scribbles", Default = false, Tooltip = "Prevents 'Scribbles' from attacking you." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassDronesStampede",         { Text = "Bypass Drones Stampede",           Default = false, Tooltip = "Prevents 'The Drones Stampede' from attacking you." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassDrones",         { Text = "Bypass Drones",           Default = false, Tooltip = "Prevents 'Drones' from attacking you." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassGiggle",         { Text = "Bypass Giggle",           Default = false, Tooltip = "Prevents 'Giggle' from attacking you." })
@@ -1800,7 +1800,7 @@ Groupboxes.Visuals_Camera = Groupboxes.Visuals_LeftTab:AddTab("Camera")
 Groupboxes.Visuals_Camera:AddToggle("AmbientToggle", { Text = "Ambient", Default = false, Tooltip = "Changes the lighting color to the specified value." })
 Groupboxes.Visuals_Camera:AddSlider("FieldOfView", { Text = "Field of View", Min = 1, Max = 120, Default = 70, Rounding = 0 })
 Groupboxes.Visuals_Camera:AddToggle("FOVToggle", {    Text = "Custom FOV",    Default = false,    Tooltip = "Only applies the Field of View slider when enabled." })
-Toggles.FOVToggle:AddKeyPicker("FovToggle", {Text = "Custom Fov", Default = "V", Mode = "Toggle", SyncToggleState = true})
+Toggles.FOVToggle:AddKeyPicker("FovToggle", {Text = "Custom Fov", Default = "O", Mode = "Toggle", SyncToggleState = true})
 Groupboxes.Visuals_Camera:AddDivider()
 Groupboxes.Visuals_Camera:AddToggle("RemoveCameraShake", {
 	Text = "Remove Camera Shake", Default = false, Tooltip = "Prevents the camera from shaking.",
@@ -4481,7 +4481,7 @@ Functions.TriggerPrompt = function(Prompt)
 	if Prompt.Parent.Name == "KeyObtainFake" or Prompt.Parent.Name == "TithingPlate" then return end
 
     -- archives
-	if Prompt.Name == "ManualOpenPrompt" then return end
+	if Prompt.Name == "ManualOpenPrompt" or Prompt.Name == "EntryPrompt" then return end
 	if Prompt.Parent.Parent.Name == "ArchivesLargePrinter" then return end
 	if Prompt.Name == "TrashcanPrompt" then return end
 	if Prompt.Parent.Name == "Keyboard" then return end
