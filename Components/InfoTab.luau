@@ -3,6 +3,7 @@ return function(Window)
         "31/8/2026",
 
         -- Green = Added
+        "<font color='rgb(0, 255, 0)'>+ Added Pizza To Item Esp</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Forget Me Not Skip</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Anti Drones</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Anti Alma</font>",
@@ -15,6 +16,7 @@ return function(Window)
         "<font color='rgb(255, 0, 0)'>- Removed Firebacon</font>",
 
         -- Yellow = Changed
+        "<font color='rgb(255, 255, 0)'>~ Paper Planes Are Now Blocked From Auto Interact</font>",
         "<font color='rgb(255, 255, 0)'>~ Put All Archive Features Into Its Seperate Tab</font>",
         "<font color='rgb(255, 255, 0)'>~ Improved Auto Interact Blacklist for Archives</font>",
     }
