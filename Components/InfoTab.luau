@@ -14,6 +14,7 @@ return function(Window)
 
         -- Yellow = Changed
         "<font color='rgb(255, 255, 0)'>~ Paper Planes Are Now Blocked From Auto Interact</font>",
+        "<font color='rgb(255, 255, 0)'>~ Fixed ForGetMeNot Bug With Teller</font>",
         "<font color='rgb(255, 255, 0)'>~ Put All Archive Features Into Its Seperate Tab</font>",
         "<font color='rgb(255, 255, 0)'>~ Improved Auto Interact Blacklist for Archives</font>",
 
