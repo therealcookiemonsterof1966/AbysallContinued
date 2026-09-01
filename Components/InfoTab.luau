@@ -78,9 +78,12 @@ return function(Window)
         Executor:AddLabel(Result, true)
     end
 
+	Groupboxes.Scripts = Tabs.InfoTab:AddLeftGroupbox("Scripts")
+	Groupboxes.Scripts:AddButton("InfiniteYield",         { Text = "Infinite Yield",           Default = false, Tooltip = "Runs infinite yield.", 	Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))() end })
+
     local Community = InfoTab:AddLeftGroupbox("Community")
     Community:AddButton("Copy Discord Invite", function()
-	    toclipboard("https://dsc.gg/abysallhub")
+	    toclipboard("https://dsc.gg/abysallhubcontinued")
 	    Library:Notify("Discord invite copied.")
     end)
 end
