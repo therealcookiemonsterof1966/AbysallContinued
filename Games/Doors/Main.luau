@@ -113,6 +113,8 @@ local ForgetMeNotSolvedRooms = {}
 local ForgetMeNotStorage
 local ForgetMeNotRoomCount = 0
 local ForgetMeNotHasSolved = false
+local AntiScribbles_OldNamecall
+local AntiScribbles_IsHooked = false
 
 
 
@@ -158,6 +160,14 @@ Functions.CheckCompatability = function(Array)
 end
 
 local Entities = {
+	["TellerRig"] = {
+		Alias = "Teller",
+		NotifyMessage = { Title = "Entity 'Teller' has spawned.", Body = "Dont worry, hes only annoying." }
+	},
+	["Scribbles"] = {
+		Alias = "Scribbles",
+		NotifyMessage = { Title = "Entity 'Scribbles' has spawned.", Body = "Find a hiding spot." }
+	},
 	["BashMoving"] = {
 		Alias = "Bash",
 		NotifyMessage = { Title = "Entity 'Bash' has spawned.", Body = "Find a hiding spot."}
@@ -252,6 +262,8 @@ local EntityIcons = {
 }
 
 local ItemNames = {
+	["HoneyPot"]          = "Honey Pot",
+	["Pizza"]             = "Pizza",
 	["Lighter"]           = "Lighter",
 	["Flashlight"]        = "Flashlight",
 	["Lockpick"]          = "Lockpicks",
@@ -851,7 +863,8 @@ end
 
 local EntityDistances = {
 	["RushMoving"]    = 85,
-	["BashMoving"]    = 95,
+	["Scribbles"]	  = 85,
+	["BashMoving"]    = 150,
 	["AmbushMoving"]  = 150,
 	["A60"]           = 125,
 	["A120"]          = 85,
@@ -1130,6 +1143,7 @@ local Tabs = {
 	Exploits = Window:AddTab("Exploits", "shield"),
 	Visuals  = Window:AddTab("Visuals", "eye"),
 	Floors   = Window:AddTab("Floors", "earth"),
+	Archives  = Window:AddTab("New - Archives", "rbxassetid://104508835882225"),
 }
 
 Groupboxes.General_Character = Tabs.General:AddLeftGroupbox("Character")
@@ -1360,14 +1374,7 @@ Groupboxes.Self_Misc:AddButton({
 })
 
 Groupboxes.Exploits_Bypass = Tabs.Exploits:AddLeftGroupbox("Bypass / Solve")
-Groupboxes.Exploits_Bypass:AddToggle("ForgetMeNotSolver", { Text = "Forget Me Not Skipper", Default = false, Tooltip = "Automatically Skippes Forget Me Not doors." })
-Groupboxes.Exploits_Bypass:AddDivider()
-Groupboxes.Exploits_Bypass:AddToggle("BypassWater", { Text = "Bypass Electric Water", Default = false, Tooltip = "Prevents electric water from hurting you." })
-Groupboxes.Exploits_Bypass:AddToggle("BypassAlma", { Text = "Bypass Alma", Default = false, Tooltip = "Prevents 'Alma' from spawning." })
--- Groupboxes.Exploits_Bypass:AddToggle("BypassScribbles", { Text = "Bypass Scribbles", Default = false, Tooltip = "Prevents 'Scribbles' from attacking you." })
-Groupboxes.Exploits_Bypass:AddToggle("BypassDronesStampede",         { Text = "Bypass Drones Stampede",           Default = false, Tooltip = "Prevents 'The Drones Stampede' from attacking you." })
-Groupboxes.Exploits_Bypass:AddToggle("BypassDrones",         { Text = "Bypass Drones",           Default = false, Tooltip = "Prevents 'Drones' from attacking you." })
-Groupboxes.Exploits_Bypass:AddDivider()
+
 Groupboxes.Exploits_Bypass:AddToggle("BypassGiggle",         { Text = "Bypass Giggle",           Default = false, Tooltip = "Prevents 'Giggle' from attacking you." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassDupe",           { Text = "Bypass Dupe",             Default = false, Tooltip = "Prevents you from open 'Dupe' fake doors." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassEyes",           { Text = "Bypass Eyes",             Default = false, Tooltip = "Prevents 'Eyes' from hurting you." })
@@ -1382,279 +1389,6 @@ Groupboxes.Exploits_Bypass:AddToggle("BypassBanana",         { Text = "Bypass Ba
 Groupboxes.Exploits_Bypass:AddToggle("BypassJeff",           { Text = "Bypass Jeff",             Default = false, Tooltip = "Prevents 'Jeff the Killer' from stabbing you (sometimes doesn't work)." })
 
 
-Toggles.ForgetMeNotSolver:OnChanged(function(Value)
-	if ForgetMeNotConnection then
-		ForgetMeNotConnection:Disconnect()
-		ForgetMeNotConnection = nil
-	end
-
-	if not Value then
-		return
-	end
-
-	local function GetCharacter()
-		return game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
-	end
-
-	local function GetNextRoom(Number)
-		local NextRoom
-
-		repeat
-			task.wait(0.1)
-
-			for _, Room in ipairs(workspace.CurrentRooms:GetChildren()) do
-				local RoomNumber = tonumber(Room.Name)
-
-				if RoomNumber and RoomNumber > Number then
-					if not NextRoom or RoomNumber < tonumber(NextRoom.Name) then
-						NextRoom = Room
-					end
-				end
-			end
-		until NextRoom
-
-		return NextRoom
-	end
-
-	local function Run(Room)
-		if ForgetMeNotProcessing[Room] then
-			return
-		end
-
-		ForgetMeNotProcessing[Room] = true
-
-		task.wait(2)
-
-		if not Room.Parent then
-			ForgetMeNotProcessing[Room] = nil
-			return
-		end
-
-		if not Room:FindFirstChild("ForgetMeNotVineDoors", true) then
-			ForgetMeNotProcessing[Room] = nil
-			return
-		end
-
-		local NextRoom = GetNextRoom(tonumber(Room.Name))
-
-		if not NextRoom then
-			ForgetMeNotProcessing[Room] = nil
-			return
-		end
-
-		local Door = NextRoom:WaitForChild("Door", 10)
-		local Hidden = Door and Door:WaitForChild("Hidden", 10)
-
-		if not Door or not Hidden then
-			ForgetMeNotProcessing[Room] = nil
-			return
-		end
-
-		local Opened = Door:GetAttribute("Opened") == true
-
-		local OpenedConnection = Door:GetAttributeChangedSignal("Opened"):Connect(function()
-			Opened = Door:GetAttribute("Opened") == true
-		end)
-
-		while NextRoom.Parent and not Opened do
-			local Character = GetCharacter()
-
-			if Character then
-				if Hidden:IsA("BasePart") then
-					Character:PivotTo(Hidden.CFrame)
-				elseif Hidden:IsA("Model") then
-					Character:PivotTo(Hidden:GetPivot())
-				end
-			end
-
-			pcall(function()
-				Door.ClientOpen:Fire()
-			end)
-
-			pcall(function()
-				Door.ClientOpen:FireServer()
-			end)
-
-			task.wait()
-		end
-
-		OpenedConnection:Disconnect()
-		ForgetMeNotProcessing[Room] = nil
-	end
-
-	ForgetMeNotConnection = workspace.CurrentRooms.ChildAdded:Connect(function(Room)
-		if not tonumber(Room.Name) then
-			return
-		end
-
-		task.spawn(function()
-			task.wait(2)
-
-			if Room:FindFirstChild("ForgetMeNotVineDoors", true) then
-				task.spawn(Run, Room)
-			end
-		end)
-	end)
-
-	for _, Room in ipairs(workspace.CurrentRooms:GetChildren()) do
-		if tonumber(Room.Name) and Room:FindFirstChild("ForgetMeNotVineDoors", true) then
-			task.spawn(Run, Room)
-		end
-	end
-end)
-Toggles.BypassWater:OnChanged(function(Value)
-	Functions.Notify({Title = "PositionSpoof Will Break This!."})
-
-	if WaterConnection then
-		WaterConnection:Disconnect()
-		WaterConnection = nil
-	end
-
-	if Value then
-		local function ProcessRoom(room)
-			if not tonumber(room.Name) then return end
-
-			task.wait(2)
-
-			local Water = room:FindFirstChild("Water")
-			if not Water or WaterParts[Water] then return end
-
-			local Part = Instance.new("Part")
-			Part.Name = "WaterBypass"
-			Part.Anchored = true
-			Part.CanCollide = true
-			Part.CanTouch = false
-			Part.CanQuery = false
-			Part.Transparency = 0.25
-			Part.Color = Color3.fromRGB(0, 150, 255)
-			Part.Material = Enum.Material.ForceField
-
-			if Water:IsA("BasePart") then
-				Part.Size = Water.Size + Vector3.new(0, 0.5, 0)
-				Part.CFrame = Water.CFrame * CFrame.new(0, 0.25, 0)
-			elseif Water:IsA("Model") then
-				local cf, size = Water:GetBoundingBox()
-				Part.Size = size + Vector3.new(0, 0.5, 0)
-				Part.CFrame = cf * CFrame.new(0, 0.25, 0)
-			else
-				Part.Size = Vector3.new(10, 1.5, 10)
-				Part.CFrame = Water:GetPivot() * CFrame.new(0, 0.25, 0)
-			end
-
-			Part.Parent = room
-			WaterParts[Water] = Part
-		end
-
-		for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
-			task.spawn(ProcessRoom, room)
-		end
-
-		WaterConnection = workspace.CurrentRooms.ChildAdded:Connect(function(room)
-			task.spawn(ProcessRoom, room)
-		end)
-	else
-		for _, Part in pairs(WaterParts) do
-			if Part then
-				Part:Destroy()
-			end
-		end
-
-		table.clear(WaterParts)
-	end
-end)
-Toggles.BypassAlma:OnChanged(function(Value)
-	if AlmaConnection then
-		AlmaConnection:Disconnect()
-		AlmaConnection = nil
-	end
-
-	if Value then
-		for _, child in ipairs(workspace:GetChildren()) do
-			if child.Name == "Alma" then
-				child:Destroy()
-			end
-		end
-
-		AlmaConnection = workspace.ChildAdded:Connect(function(child)
-			if child.Name == "Alma" then
-				child:Destroy()
-			end
-		end)
-	end
-end)
--- Toggles.BypassScribbles:OnChanged(function(Value)
---	if Value then
---		if not ScribblesHook then
---			ScribblesHook = hookmetamethod(game, "__index", newcclosure(function(self, key)
---				if not checkcaller() and typeof(self) == "Instance" and self.Parent and self.Parent.Name == "Scribbles" then
---					return nil
---				end
---				return ScribblesHook(self, key)
---			end))
---		end
---	end
---end)
-Toggles.BypassDronesStampede:OnChanged(function(Value)
-	Functions.Notify({Title = "This is an experimental feature, it might not work."})
-	if DronesStampedeConnection then
-		DronesStampedeConnection:Disconnect()
-		DronesStampedeConnection = nil
-	end
-
-	if Value then
-		for _, child in ipairs(workspace:GetChildren()) do
-			if child.Name == "DronesStampede" then
-				child:Destroy()
-			end
-		end
-
-		DronesStampedeConnection = workspace.ChildAdded:Connect(function(child)
-			if child.Name == "DronesStampede" then
-				child:Destroy()
-			end
-		end)
-	end
-end)
-Toggles.BypassDrones:OnChanged(function(Value)
-	local RS = game:GetService("ReplicatedStorage")
-
-	local function ProcessDrones(drones)
-		local WalkedInto = drones:FindFirstChild("WalkedInto") or drones:WaitForChild("WalkedInto", 3)
-		if WalkedInto and not DroneWalkedIntoParents[WalkedInto] then
-			DroneWalkedIntoParents[WalkedInto] = drones
-			WalkedInto.Parent = RS
-		end
-	end
-
-	if Value then
-		for _, child in ipairs(workspace:GetChildren()) do
-			if child.Name == "Drones" then
-				ProcessDrones(child)
-			end
-		end
-
-		if DroneConnection then
-			DroneConnection:Disconnect()
-		end
-		DroneConnection = workspace.ChildAdded:Connect(function(child)
-			if child.Name == "Drones" then
-				ProcessDrones(child)
-			end
-		end)
-	else
-		for WalkedInto, originalParent in pairs(DroneWalkedIntoParents) do
-			if WalkedInto and WalkedInto.Parent and originalParent and originalParent.Parent then
-				WalkedInto.Parent = originalParent
-			end
-		end
-		table.clear(DroneWalkedIntoParents)
-
-		if DroneConnection then
-			DroneConnection:Disconnect()
-			DroneConnection = nil
-		end
-	end
-end)
 Toggles.BypassGiggle:OnChanged(function(Value)
 	for _, Object in Objects.Entities do
 		if Object.Name == "GiggleCeiling" then
@@ -1764,6 +1498,415 @@ Toggles.BypassJeff:OnChanged(function(Value)
 	end
 end)
 
+
+-- Archives
+
+Groupboxes.Archives_Misc = Tabs.Archives:AddRightGroupbox("Miscellaneous / Anti")
+Groupboxes.Archives_Misc:AddToggle("ForgetMeNotSolver", { Text = "Forget Me Not Skipper", Default = false, Tooltip = "Automatically Skippes Forget Me Not doors." })
+Groupboxes.Archives_Misc:AddToggle("AntiRansom", { Text = "Anti Ransom", Default = false, Tooltip = "Prevents 'Ransom' from attacking you." })
+Groupboxes.Archives_Misc:AddToggle("AntiScribbles", { Text = "Anti Scribbles", Default = false, Tooltip = "Prevents 'Scribbles' from attacking you." })
+Groupboxes.Archives_Misc:AddToggle("AntiClosetTrash", { Text = "Anti Closet Trash", Default = false, Tooltip = "Prevents 'Closet Trash' from spawning." })
+
+
+Groupboxes.Archives_Bypasses = Tabs.Archives:AddLeftGroupbox("Bypasses")
+Groupboxes.Archives_Bypasses:AddToggle("BypassWater", { Text = "Bypass Electric Water", Default = false, Tooltip = "Prevents electric water from hurting you." })
+Groupboxes.Archives_Bypasses:AddToggle("BypassAlma", { Text = "Bypass Alma", Default = false, Tooltip = "Prevents 'Alma' from spawning." })
+Groupboxes.Archives_Bypasses:AddToggle("BypassDrones",         { Text = "Bypass Drones",           Default = false, Tooltip = "Prevents 'Drones' from attacking you." })
+
+Groupboxes.Archives_Experimental = Tabs.Archives:AddLeftGroupbox("Experimental")
+Groupboxes.Archives_Experimental:AddToggle("BypassDronesStampede",         { Text = "Bypass Drones Stampede",           Default = false, Tooltip = "Prevents 'The Drones Stampede' from attacking you." })
+
+Toggles.AntiClosetTrash:OnChanged(function(Value)
+	if AntiClosetTrash_Connection then
+		AntiClosetTrash_Connection:Disconnect()
+		AntiClosetTrash_Connection = nil
+	end
+
+	if not Value then
+		return
+	end
+
+	AntiClosetTrash_Connection = workspace.ChildAdded:Connect(function(Child)
+		if not Toggles.AntiClosetTrash.Value then
+			return
+		end
+
+		local Name = Child.Name
+
+		if (Name:sub(1, 6) == "Binder"
+			or Name:sub(1, 4) == "Shoe"
+			or Name:sub(1, 5) == "Shelf")
+			then
+
+			Child:Destroy()
+		end
+	end)
+end)
+Toggles.AntiRansom:OnChanged(function(Value)
+	if AntiRansom_Connection then
+		AntiRansom_Connection:Disconnect()
+		AntiRansom_Connection = nil
+	end
+
+	if not Value then
+		return
+	end
+
+	AntiRansom_Connection = workspace.ChildAdded:Connect(function(Child)
+		if Child.Name == "Ransom" and Toggles.AntiRansom.Value then
+			Child:Destroy()
+			print ("Ransom gone hehehehehehehehe")
+		end
+	end)
+end)
+Toggles.ForgetMeNotSolver:OnChanged(function(Value)
+	if ForgetMeNotConnection then
+		ForgetMeNotConnection:Disconnect()
+		ForgetMeNotConnection = nil
+	end
+
+	ForgetMeNotRunning = false
+	ForgetMeNotProcessing = {}
+	ForgetMeNotNotified = {}
+
+	if not Value then
+		return
+	end
+
+	ForgetMeNotRunning = true
+
+	local function GetCharacter()
+		return game.Players.LocalPlayer.Character
+			or game.Players.LocalPlayer.CharacterAdded:Wait()
+	end
+
+	local function GetNextRoom(Number)
+		local NextRoom
+
+		repeat
+			task.wait(0.1)
+
+			if not ForgetMeNotRunning then
+				return nil
+			end
+
+			for _, Room in ipairs(workspace.CurrentRooms:GetChildren()) do
+				local RoomNumber = tonumber(Room.Name)
+
+				if RoomNumber and RoomNumber > Number then
+					if not NextRoom or RoomNumber < tonumber(NextRoom.Name) then
+						NextRoom = Room
+					end
+				end
+			end
+		until NextRoom
+
+		return NextRoom
+	end
+
+	local function Run(Room)
+		if not ForgetMeNotRunning or ForgetMeNotProcessing[Room] then
+			return
+		end
+
+		ForgetMeNotProcessing[Room] = true
+
+		task.wait(2)
+
+		if not ForgetMeNotRunning or not Room.Parent then
+			ForgetMeNotProcessing[Room] = nil
+			return
+		end
+
+		if not Room:FindFirstChild("ForgetMeNotVineDoors", true) then
+			ForgetMeNotProcessing[Room] = nil
+			return
+		end
+
+		local NextRoom = GetNextRoom(tonumber(Room.Name))
+
+		if not NextRoom then
+			ForgetMeNotProcessing[Room] = nil
+			return
+		end
+
+		local Door = NextRoom:FindFirstChild("Door")
+
+		if not Door then
+			ForgetMeNotProcessing[Room] = nil
+			return
+		end
+
+		if Door:GetAttribute("Opened") == true then
+			ForgetMeNotProcessing[Room] = nil
+			return
+		end
+
+
+		if not Room:FindFirstChild(game.Players.LocalPlayer.Name, true) then
+			if not ForgetMeNotNotified[Room] then
+				ForgetMeNotNotified[Room] = true
+				Functions.Notify({Title = "Please Enter The First ForgetMeNot Door"})
+			end
+
+			repeat
+				task.wait()
+			until Room:FindFirstChild(game.Players.LocalPlayer.Name, true)
+				or not ForgetMeNotRunning
+				or not Room.Parent
+
+			if not ForgetMeNotRunning or not Room.Parent then
+				ForgetMeNotProcessing[Room] = nil
+				return
+			end
+		end
+
+		if not ForgetMeNotRunning or Door:GetAttribute("Opened") == true then
+			ForgetMeNotProcessing[Room] = nil
+			return
+		end
+
+		local Hidden = Door:WaitForChild("Hidden", 10)
+
+		if not Hidden or not ForgetMeNotRunning or Door:GetAttribute("Opened") == true then
+			ForgetMeNotProcessing[Room] = nil
+			return
+		end
+
+	
+		task.wait(3)
+
+		if not ForgetMeNotRunning or not NextRoom.Parent or Door:GetAttribute("Opened") == true then
+			ForgetMeNotProcessing[Room] = nil
+			return
+		end
+
+
+		while ForgetMeNotRunning and NextRoom.Parent and Door:GetAttribute("Opened") ~= true do
+			local Character = GetCharacter()
+
+			if Character then
+				if Hidden:IsA("BasePart") then
+					Character:PivotTo(Hidden.CFrame)
+				elseif Hidden:IsA("Model") then
+					Character:PivotTo(Hidden:GetPivot())
+				end
+			end
+
+			pcall(function()
+				Door.ClientOpen:Fire()
+			end)
+
+			pcall(function()
+				Door.ClientOpen:FireServer()
+			end)
+
+			task.wait() 
+		end
+
+		if ForgetMeNotRunning and Door:GetAttribute("Opened") == true then
+			ForgetMeNotNotified[Room] = nil
+		end
+
+		ForgetMeNotProcessing[Room] = nil
+	end
+
+	local function CheckRooms()
+		for _, Room in ipairs(workspace.CurrentRooms:GetChildren()) do
+			if not ForgetMeNotRunning then
+				return
+			end
+
+			if tonumber(Room.Name) and not ForgetMeNotProcessing[Room] then
+				task.spawn(Run, Room)
+			end
+		end
+	end
+
+	ForgetMeNotConnection = workspace.CurrentRooms.ChildAdded:Connect(function(Room)
+		if not tonumber(Room.Name) then
+			return
+		end
+
+		task.spawn(function()
+			task.wait(2)
+
+			if ForgetMeNotRunning and Room.Parent then
+				task.spawn(Run, Room)
+			end
+		end)
+	end)
+
+	task.spawn(function()
+		while ForgetMeNotRunning do
+			CheckRooms()
+			task.wait(2)
+		end
+	end)
+
+	CheckRooms()
+end)
+Toggles.BypassWater:OnChanged(function(Value)
+
+	Functions.Notify({Title = "PositionSpoof Will Break This!."})
+
+	if WaterConnection then
+		WaterConnection:Disconnect()
+		WaterConnection = nil
+	end
+
+	if Value then
+		local function ProcessRoom(room)
+			if not tonumber(room.Name) then return end
+
+			task.wait(3)
+
+			local Water = room:FindFirstChild("Water")
+			if not Water or WaterParts[Water] then return end
+
+			local Part = Instance.new("Part")
+			Part.Name = "WaterBypass"
+			Part.Anchored = true
+			Part.CanCollide = true
+			Part.CanTouch = false
+			Part.CanQuery = false
+			Part.Transparency = 0.25
+			Part.Color = Color3.fromRGB(0, 150, 255)
+			Part.Material = Enum.Material.ForceField
+
+			if Water:IsA("BasePart") then
+				Part.Size = Water.Size + Vector3.new(0, 0.5, 0)
+				Part.CFrame = Water.CFrame * CFrame.new(0, 0.25, 0)
+			elseif Water:IsA("Model") then
+				local cf, size = Water:GetBoundingBox()
+				Part.Size = size + Vector3.new(0, 0.5, 0)
+				Part.CFrame = cf * CFrame.new(0, 0.25, 0)
+			else
+				Part.Size = Vector3.new(10, 1.5, 10)
+				Part.CFrame = Water:GetPivot() * CFrame.new(0, 0.25, 0)
+			end
+
+			Part.Parent = room
+			WaterParts[Water] = Part
+		end
+
+		for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
+			task.spawn(ProcessRoom, room)
+		end
+
+		WaterConnection = workspace.CurrentRooms.ChildAdded:Connect(function(room)
+			task.spawn(ProcessRoom, room)
+		end)
+	else
+		for _, Part in pairs(WaterParts) do
+			if Part then
+				Part:Destroy()
+			end
+		end
+
+		table.clear(WaterParts)
+	end
+end)
+Toggles.BypassAlma:OnChanged(function(Value)
+	if AlmaConnection then
+		AlmaConnection:Disconnect()
+		AlmaConnection = nil
+	end
+
+	if Value then
+		for _, child in ipairs(workspace:GetChildren()) do
+			if child.Name == "Alma" then
+				child:Destroy()
+			end
+		end
+
+		AlmaConnection = workspace.ChildAdded:Connect(function(child)
+			if child.Name == "Alma" then
+				child:Destroy()
+			end
+		end)
+	end
+end)
+Toggles.AntiScribbles:OnChanged(function(Value)
+	if AntiScribbles_Connection then
+		AntiScribbles_Connection:Disconnect()
+		AntiScribbles_Connection = nil
+	end
+
+	if not Value then
+		return
+	end
+
+	AntiScribbles_Connection = workspace.ChildAdded:Connect(function(Child)
+		if Child.Name == "Scribbles" and Toggles.AntiScribbles.Value then
+			Child:Destroy()
+		end
+	end)
+end)
+Toggles.BypassDronesStampede:OnChanged(function(Value)
+	Functions.Notify({Title = "This is an experimental feature, it might not work."})
+	if DronesStampedeConnection then
+		DronesStampedeConnection:Disconnect()
+		DronesStampedeConnection = nil
+	end
+
+	if Value then
+		for _, child in ipairs(workspace:GetChildren()) do
+			if child.Name == "DronesStampede" then
+				child:Destroy()
+			end
+		end
+
+		DronesStampedeConnection = workspace.ChildAdded:Connect(function(child)
+			if child.Name == "DronesStampede" then
+				child:Destroy()
+			end
+		end)
+	end
+end)
+Toggles.BypassDrones:OnChanged(function(Value)
+	local RS = game:GetService("ReplicatedStorage")
+
+	local function ProcessDrones(drones)
+		local WalkedInto = drones:FindFirstChild("WalkedInto") or drones:WaitForChild("WalkedInto", 3)
+		if WalkedInto and not DroneWalkedIntoParents[WalkedInto] then
+			DroneWalkedIntoParents[WalkedInto] = drones
+			WalkedInto.Parent = RS
+		end
+	end
+
+	if Value then
+		for _, child in ipairs(workspace:GetChildren()) do
+			if child.Name == "Drones" then
+				ProcessDrones(child)
+			end
+		end
+
+		if DroneConnection then
+			DroneConnection:Disconnect()
+		end
+		DroneConnection = workspace.ChildAdded:Connect(function(child)
+			if child.Name == "Drones" then
+				ProcessDrones(child)
+			end
+		end)
+	else
+		for WalkedInto, originalParent in pairs(DroneWalkedIntoParents) do
+			if WalkedInto and WalkedInto.Parent and originalParent and originalParent.Parent then
+				WalkedInto.Parent = originalParent
+			end
+		end
+		table.clear(DroneWalkedIntoParents)
+
+		if DroneConnection then
+			DroneConnection:Disconnect()
+			DroneConnection = nil
+		end
+	end
+end)
+
+
+
 Groupboxes.Exploits_BypassRight = Tabs.Exploits:AddRightGroupbox("Bypass")
 Groupboxes.Exploits_BypassRight:AddToggle("DisableAnticheat", {
 	Text = "Anticheat Bypass", Default = false,
@@ -1802,6 +1945,114 @@ Groupboxes.Exploits_BypassRight:AddDropdown("InfiniteItemsList", {
 	Disabled = not Functions.CheckCompatability({"fireproximityprompt"}),
 	DisabledTooltip = Globals.IncompatibleMessage
 })
+
+Groupboxes.Exploits_BypassRight:AddToggle("InfCrucifix", {
+	Text = "Infinite Crucifix",
+	Default = false,
+	Tooltip = "Risky! You can die or lose the Crucifix. Recommended to have low ping and stable fps.",
+})
+
+
+local InfCrucifixDropTable = {
+	RushMoving   = 54,
+	AmbushMoving = 67,
+	A60          = 70,
+	GlitchRush   = 120,
+	GlitchAmbush = 155,
+	A120         = 75,
+
+}
+
+
+local InfCrucifixDropTable = {
+	RushMoving   = 54,
+	AmbushMoving = 67,
+	A60          = 70,
+	GlitchRush   = 120,
+	GlitchAmbush = 155,
+	A120         = 75,
+
+}
+
+if Toggles.InfCrucifix.Value then
+	local InfCrucifixRaycastParams = RaycastParams.new()
+	InfCrucifixRaycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+
+	local InfCrucifixConnection
+	InfCrucifixConnection = RunService.RenderStepped:Connect(function()
+		if not Toggles.InfCrucifix.Value then
+			if InfCrucifixConnection then
+				InfCrucifixConnection:Disconnect()
+			end
+			return
+		end
+
+		local InfCrucifixCharacter = shared.player.Character
+		if not InfCrucifixCharacter then
+			return
+		end
+
+		local InfCrucifixCollision = InfCrucifixCharacter:FindFirstChild("CollisionPart")
+		if not InfCrucifixCollision then
+			return
+		end
+
+		InfCrucifixRaycastParams.FilterDescendantsInstances = {InfCrucifixCharacter}
+
+		for _, InfCrucifixEntity in ipairs(Workspace:GetChildren()) do
+			local InfCrucifixMaxDistance = InfCrucifixDropTable[InfCrucifixEntity.Name]
+			if not InfCrucifixMaxDistance or not InfCrucifixEntity.PrimaryPart then
+				continue
+			end
+
+			InfCrucifixEntity.PrimaryPart.CanCollide = true
+			InfCrucifixEntity.PrimaryPart.CanQuery = true
+
+			local InfCrucifixOrigin = InfCrucifixCollision.Position
+			local InfCrucifixDirection = InfCrucifixEntity.PrimaryPart.Position - InfCrucifixOrigin
+			local InfCrucifixRayResult = Workspace:Raycast(InfCrucifixOrigin, InfCrucifixDirection, InfCrucifixRaycastParams)
+
+			if not InfCrucifixRayResult or not InfCrucifixRayResult.Instance:IsDescendantOf(InfCrucifixEntity) then
+				continue
+			end
+
+			local InfCrucifixDistance = (InfCrucifixCollision.Position - InfCrucifixEntity.PrimaryPart.Position).Magnitude
+			if InfCrucifixDistance >= InfCrucifixMaxDistance then
+				continue
+			end
+
+			local InfCrucifixTool = InfCrucifixCharacter:FindFirstChildOfClass("Tool")
+			if not InfCrucifixTool or InfCrucifixTool.Name ~= "Crucifix" then
+				continue
+			end
+
+			task.spawn(function()
+				ReplicatedStorage.RemotesFolder.DropItem:FireServer(InfCrucifixTool)
+				task.wait(0.54)
+
+				local InfCrucifixDrops = Workspace:FindFirstChild("Drops")
+				if not InfCrucifixDrops then
+					return
+				end
+
+				local InfCrucifixDropped = InfCrucifixDrops:FindFirstChild("Crucifix")
+				if not InfCrucifixDropped then
+					return
+				end
+
+				local InfCrucifixPrompt = InfCrucifixDropped:FindFirstChildOfClass("ProximityPrompt")
+				if InfCrucifixPrompt then
+					fireproximityprompt(InfCrucifixPrompt)
+				end
+			end)
+
+			task.wait(0.6)
+		end
+	end)
+
+	shared.Connect:GiveSignal(InfCrucifixConnection)
+end
+
 
 Groupboxes.Exploits_BypassRight:AddDivider()
 Groupboxes.Exploits_BypassRight:AddToggle("PositionSpoof", {
@@ -2086,7 +2337,7 @@ Groupboxes.Visuals_EntitySettings = Groupboxes.Visuals_RightTab:AddTab("Settings
 
 Groupboxes.Visuals_Entities:AddDropdown("EntityList", {
 	Text = "Entity List",
-	Values = { "Rush","Bash","Ambush","Eyes","Halt","Blitz","Lookman","Gloombat Swarm","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Monument","AR0xMBUSH","RNIUSHCG==" },
+	Values = { "Rush","Bash","Scribbles","Ambush","Eyes","Halt","Blitz","Lookman","Gloombat Swarm","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Monument","AR0xMBUSH","RNIUSHCG==" },
 	Multi = true, AllowNull = true
 })
 Groupboxes.Visuals_Entities:AddToggle("NotifyEntities",    { Text = "Notify Entities",    Default = false, Tooltip = "Sends a notification when an entity spawns." })
@@ -2215,7 +2466,7 @@ Groupboxes.Visuals_ESP_Toggles:AddToggle("LadderESPToggle",     { Text = "Ladder
 Groupboxes.Visuals_ESP_Toggles:AddDivider()
 Groupboxes.Visuals_ESP_Toggles:AddDropdown("EntityESPOptions",     { 
 	Text = "Entity List",
-	Values = { "Rush","Ambush","Eyes","Dupe","Figure","Blitz","Lookman","Snare","Giggle","Gloombat Eggs","Grumble","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Mandrake Hole","Monument","Bramble","AR0xMBUSH","RNIUSHCG==" },
+	Values = { "Rush","Bash","Scribbles","Teller","Ambush","Eyes","Dupe","Figure","Blitz","Lookman","Snare","Giggle","Gloombat Eggs","Grumble","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Mandrake Hole","Monument","Bramble","AR0xMBUSH","RNIUSHCG==" },
 	Multi = true,
 	AllowNull = true
 })
@@ -2233,7 +2484,7 @@ Toggles.EntityESPToggle:AddColorPicker("EntityESPColor",       { Text = "Entitie
 local HidingSpotLabels = {
 	Wardrobe = "Closet", ["Backdoor_Wardrobe"] = "Closet", Toolshed = "Closet",
 	RetroWardrobe = "Closet", ["Wardrobe-FOOLS26"] = "Closet",
-	Locker_Large = "Locker", Rooms_Locker = "Locker", Rooms_Locker_Fridge = "Locker",
+	Locker_Large = "Locker", Rooms_Locker = "Hiding_Spot", Rooms_Locker_Fridge = "Locker",
 	Bed = "Bed", Double_Bed = "Double Bed", CircularVent = "Vent", Dumpster = "Dumpster"
 }
 local ChestLabels = {
@@ -2249,7 +2500,7 @@ local EntityESPLabels = {
 }
 
 local NodeEntities = {
-	Rush = true, Ambush = true, Eyes = true, Blitz = true, Lookman = true, ["A-60"] = true, ["A-120"] = true, Sally = true, ["Jeff The Killer"] = true, Monument = true, ["AR0xMBUSH"] = true, ["RNIUSHCG=="] = true
+	Rush = true, Bash = true, Scribbles = true, Ambush = true, Eyes = true, Blitz = true, Lookman = true, ["A-60"] = true, ["A-120"] = true, Sally = true, ["Jeff The Killer"] = true, Monument = true, ["AR0xMBUSH"] = true, ["RNIUSHCG=="] = true
 }
 
 Toggles.DoorESPToggle:OnChanged(function(Value)
@@ -4540,8 +4791,31 @@ local AutoInteractBlacklist = {
 
 local TriggerDebounce = false
 
+local function IsHidingSpotPrompt(Prompt)
+	if Prompt.Name ~= "InteractPrompt" then
+		return false
+	end
+
+	local CandidateNames = {
+		Prompt.Parent and Prompt.Parent.Name,
+		Prompt.Parent and Prompt.Parent.Parent and Prompt.Parent.Parent.Name,
+		Prompt.Parent and Prompt.Parent.Parent and Prompt.Parent.Parent.Parent and Prompt.Parent.Parent.Parent.Name,
+	}
+
+	for _, Name in ipairs(CandidateNames) do
+		if typeof(Name) == "string" and (
+			string.find(string.lower(Name), "hidingspot")
+			or string.find(string.lower(Name), "hiding_spot")
+		) then
+			return true
+		end
+	end
+
+	return false
+end
+
 Functions.TriggerPrompt = function(Prompt)
-	if AutoInteractBlacklist[Prompt.Name] then return end
+	if AutoInteractBlacklist[Prompt.Name] and not IsHidingSpotPrompt(Prompt) then return end
 	if not Prompt or not Prompt.Parent then return end
 	if TriggerDebounce then return end
 
@@ -4620,6 +4894,9 @@ Functions.TriggerPrompt = function(Prompt)
 	if Prompt.Parent.Name == "KeyObtainFake" or Prompt.Parent.Name == "TithingPlate" then return end
 
     -- archives
+	if Prompt.Parent.Name == "Briefcase" then return end
+	if Prompt.Name == "SinkPrompt" or Prompt.Parent.Name == "Faucet" then return end
+	if Prompt.Parent.Name == "PaperPlanePickup" or Prompt.Parent.Name == "PaperPlane" then return end
 	if Prompt.Name == "ManualOpenPrompt" or Prompt.Name == "EntryPrompt" then return end
 	if Prompt.Parent.Parent.Name == "ArchivesLargePrinter" then return end
 	if Prompt.Name == "TrashcanPrompt" then return end
@@ -4987,6 +5264,8 @@ Library:OnUnload(function()
 
 	getgenv().Abysall = nil
 end)
+
+
 
 while not Globals.MainUI do task.wait() end
 Abysall.Interface.ApplySettingsTab(Window)
