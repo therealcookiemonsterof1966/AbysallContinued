@@ -12,13 +12,13 @@ return function(Window)
         "<font color='rgb(0, 255, 0)'>+ Added A Toggle For Custom Fov</font>",
         "<font color='rgb(0, 255, 0)'>+ Added More That I Will Mention Later</font>",
 
-        -- Red = Removed
-        "<font color='rgb(255, 0, 0)'>- Removed Firebacon</font>",
-
         -- Yellow = Changed
         "<font color='rgb(255, 255, 0)'>~ Paper Planes Are Now Blocked From Auto Interact</font>",
         "<font color='rgb(255, 255, 0)'>~ Put All Archive Features Into Its Seperate Tab</font>",
         "<font color='rgb(255, 255, 0)'>~ Improved Auto Interact Blacklist for Archives</font>",
+
+        -- Red = Removed
+        "<font color='rgb(255, 0, 0)'>- Removed Firebacon</font>",
     }
     local function CloneReference(Object)
         if Abysall and Abysall.Environment.cloneref then
