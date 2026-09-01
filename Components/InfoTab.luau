@@ -82,6 +82,18 @@ return function(Window)
 	local Scripts = InfoTab:AddLeftGroupbox("Scripts")
 	Scripts:AddButton("InfiniteYield",         { Text = "Infinite Yield",           Default = false, Tooltip = "Runs infinite yield.", 	Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))() end })
 
+	local CreditsList = {
+		"CookieMonster — Owner of the Continued Script",
+		"FireBacon — Owner of the Discontinued Script",
+		"Rhyan57 — Provided the Infinite Crucifix",
+		LocalPlayer.Name .. " — For Using This Script"
+	}
+
+	local Credits = InfoTab:AddLeftGroupbox("Credits")
+	for Index, Credit in pairs(CreditsList) do
+		Credits:AddLabel(Credit, true)
+	end
+
     local Community = InfoTab:AddLeftGroupbox("Community")
     Community:AddButton("Copy Discord Invite", function()
 	    toclipboard("https://dsc.gg/abysallhubcontinued")
