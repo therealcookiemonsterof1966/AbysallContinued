@@ -59,6 +59,18 @@ return function(Window)
     User:AddLabel("ID: " .. LocalPlayer.Name, true)
     User:AddLabel("Total Executions: " .. (Abysall.TotalExecutions and Abysall.TotalExecutions or "N/A"), true)
 
+	local CreditsList = {
+		"<font color='rgb(0, 255, 255)'>CookieMonster — Owner of the Continued Script</font>",
+		"<font color='rgb(255, 165, 0)'>FireBacon — Owner of the Discontinued Script</font>",
+		"<font color='rgb(255, 105, 180)'>Rhyan57 — Provided the Infinite Crucifix</font>",
+		"<font color='rgb(50, 205, 50)'>" .. LocalPlayer.Name .. " — For Using This Script</font>"
+	}
+
+	local Credits = InfoTab:AddRightGroupbox("Credits")
+	for Index, Credit in pairs(CreditsList) do
+		Credits:AddLabel(Credit, true)
+	end
+
     local Changelog = InfoTab:AddRightGroupbox("Changelog")
     for Index, Change in pairs(LatestChangelog) do
         Changelog:AddLabel(Change, true)
@@ -82,17 +94,6 @@ return function(Window)
 	local Scripts = InfoTab:AddLeftGroupbox("Scripts")
 	Scripts:AddButton("InfiniteYield",         { Text = "Infinite Yield",           Default = false, Tooltip = "Runs infinite yield.", 	Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))() end })
 
-	local CreditsList = {
-		"CookieMonster — Owner of the Continued Script",
-		"FireBacon — Owner of the Discontinued Script",
-		"Rhyan57 — Provided the Infinite Crucifix",
-		LocalPlayer.Name .. " — For Using This Script"
-	}
-
-	local Credits = InfoTab:AddLeftGroupbox("Credits")
-	for Index, Credit in pairs(CreditsList) do
-		Credits:AddLabel(Credit, true)
-	end
 
     local Community = InfoTab:AddLeftGroupbox("Community")
     Community:AddButton("Copy Discord Invite", function()
