@@ -3,17 +3,17 @@ return function(Window)
         "31/8/2026",
 
         -- Green = Added
-        "<font color='rgb(0, 255, 0)'>+ Added Pizza To Item Esp</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Forget Me Not Skip</font>",
+        "<font color='rgb(0, 255, 0)'>+ Added Infinite Crucifix</font>",
+        "<font color='rgb(0, 255, 0)'>+ Added Closet Trash Remover</font>",
+        "<font color='rgb(0, 255, 0)'>+ Added Anti Ransom (and added honeypot to the esp)</font>",
+        "<font color='rgb(0, 255, 0)'>+ Added Anti Scribble (Working this time)</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Anti Drones</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Anti Alma</font>",
-        "<font color='rgb(0, 255, 0)'>+ Added Anti Droned Stampede (Experimental)</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Anti Electric Water</font>",
         "<font color='rgb(0, 255, 0)'>+ Added A Toggle For Custom Fov</font>",
-        "<font color='rgb(0, 255, 0)'>+ Added More That I Will Mention Later</font>",
 
         -- Yellow = Changed
-        "<font color='rgb(255, 255, 0)'>~ Paper Planes Are Now Blocked From Auto Interact</font>",
         "<font color='rgb(255, 255, 0)'>~ Fixed ForGetMeNot Bug With Teller</font>",
         "<font color='rgb(255, 255, 0)'>~ Put All Archive Features Into Its Seperate Tab</font>",
         "<font color='rgb(255, 255, 0)'>~ Improved Auto Interact Blacklist for Archives</font>",
