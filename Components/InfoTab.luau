@@ -3,20 +3,18 @@ return function(Window)
         "31/8/2026",
 
         -- Green = Added
-        "<font color='rgb(0, 255, 0)'>+ Added Forget Me Not Skip</font>",
-        "<font color='rgb(0, 255, 0)'>+ Added Infinite Crucifix</font>",
-        "<font color='rgb(0, 255, 0)'>+ Added Closet Trash Remover</font>",
-        "<font color='rgb(0, 255, 0)'>+ Added Anti Ransom (and added honeypot to the esp)</font>",
-        "<font color='rgb(0, 255, 0)'>+ Added Anti Scribble (Working this time)</font>",
-        "<font color='rgb(0, 255, 0)'>+ Added Anti Drones</font>",
-        "<font color='rgb(0, 255, 0)'>+ Added Anti Alma</font>",
-        "<font color='rgb(0, 255, 0)'>+ Added Anti Electric Water</font>",
-        "<font color='rgb(0, 255, 0)'>+ Added A Toggle For Custom Fov</font>",
+
+        "<font color='rgb(0, 255, 0)'>+ Added Time Stop/Anti Stampede</font>",
+        "<font color='rgb(0, 255, 0)'>+ Greatly Improved ForgetMeNot Skipper</font>",
+        "<font color='rgb(0, 255, 0)'>+ Added Lots Of Entity Esp And Item Esp</font>",
+
+
 
         -- Yellow = Changed
-        "<font color='rgb(255, 255, 0)'>~ Fixed ForGetMeNot Bug With Teller</font>",
-        "<font color='rgb(255, 255, 0)'>~ Put All Archive Features Into Its Seperate Tab</font>",
-        "<font color='rgb(255, 255, 0)'>~ Improved Auto Interact Blacklist for Archives</font>",
+        "<font color='rgb(255, 255, 0)'>~ Fixed ForGetMeNot Bug</font>",
+        "<font color='rgb(255, 255, 0)'>~ Fixed AutoCloset Bug</font>",
+        "<font color='rgb(255, 255, 0)'>~ Fixed An Issue Where Big Blue Water Bypass Parts Would Softlock The Game</font>",
+        "<font color='rgb(255, 255, 0)'>~ Fixed Auto Closet For Archives</font>",
 
         -- Red = Removed
         "<font color='rgb(255, 0, 0)'>- Removed Firebacon</font>",
