@@ -7,6 +7,7 @@ return function(Window)
         "<font color='rgb(0, 255, 0)'>+ Added Time Stop/Anti Stampede</font>",
         "<font color='rgb(0, 255, 0)'>+ Greatly Improved ForgetMeNot Skipper</font>",
         "<font color='rgb(0, 255, 0)'>+ Added Lots Of Entity Esp And Item Esp</font>",
+        "<font color='rgb(0, 255, 0)'>+ Added Time Shower</font>",
 
 
 
