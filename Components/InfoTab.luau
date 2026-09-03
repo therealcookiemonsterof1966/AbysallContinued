@@ -1,21 +1,19 @@
 return function(Window)
     local LatestChangelog = {
-        "31/8/2026",
+        "3/9/2026",
 
-        -- Green = Added
+		-- Green = Added
+		"<font color='rgb(0, 255, 0)'>+ Added Stairwell tab</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added anti-re-execute protection (shared.Hastelepasta)</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added Sally Toy to ItemNames</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added ArchivesStorageBox ignore in Auto Interact</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added Cellar support in AllowedInstances</font>",
 
-        "<font color='rgb(0, 255, 0)'>+ Added Time Stop/Anti Stampede</font>",
-        "<font color='rgb(0, 255, 0)'>+ Greatly Improved ForgetMeNot Skipper</font>",
-        "<font color='rgb(0, 255, 0)'>+ Added Lots Of Entity Esp And Item Esp</font>",
-        "<font color='rgb(0, 255, 0)'>+ Added Time Shower</font>",
 
+		"<font color='rgb(255, 255, 0)'>~ Increased Window CornerRadius (2 → 6)</font>",
+		"<font color='rgb(255, 255, 0)'>~ Improved unload cleanup (resets shared.Hastelepasta)</font>",
+		"<font color='rgb(255, 255, 0)'>~ Minor polish on Archives prompt handling</font>",
 
-
-        -- Yellow = Changed
-        "<font color='rgb(255, 255, 0)'>~ Fixed ForGetMeNot Bug</font>",
-        "<font color='rgb(255, 255, 0)'>~ Fixed AutoCloset Bug</font>",
-        "<font color='rgb(255, 255, 0)'>~ Fixed An Issue Where Big Blue Water Bypass Parts Would Softlock The Game</font>",
-        "<font color='rgb(255, 255, 0)'>~ Fixed Auto Closet For Archives</font>",
 
         -- Red = Removed
         "<font color='rgb(255, 0, 0)'>- Removed Firebacon</font>",
@@ -61,7 +59,8 @@ return function(Window)
 	local CreditsList = {
 		"<font color='rgb(0, 255, 255)'>CookieMonster — Owner of the Continued Script</font>",
 		"<font color='rgb(255, 165, 0)'>FireBacon — Owner of the Discontinued Script</font>",
-		"<font color='rgb(255, 105, 180)'>Rhyan57 — Provided the Infinite Crucifix</font>",
+		"<font color='rgb(197, 63, 132)'>Rhyan57 — Provided the Infinite Crucifix</font>",
+		"<font color='rgb(241, 106, 212)'>Abbas - Basicly a developer</font>",
 		"<font color='rgb(50, 205, 50)'>" .. LocalPlayer.Name .. " — For Using This Script</font>"
 	}
 
