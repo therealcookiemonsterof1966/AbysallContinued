@@ -2,6 +2,15 @@
 
 local LoadStart = tick()
 
+if shared.Hastelepasta then
+    return 
+end
+
+shared.Hastelepasta = true
+
+
+
+
 getgenv().Abysall = {
     Legit = true
 }
@@ -121,6 +130,7 @@ local TimeShowerSourceLabel = nil
 local TimeShowerLabel = nil
 local TimeShowerToken = 0
 local BypassDronesStampedeConnection
+
 
 
 
@@ -272,12 +282,13 @@ local EntityIcons = {
 }
 
 local ItemNames = {
+	["SallyToyObtain"]    = "Sally Toy",
 	["Leftovers"]         = "Lunch Box",
 	["HoneyPot"]          = "Honey Pot",
 	["FihFlakes"]         = "Fih Food",
 	["SecretCD"]          = "CD Disc",
 	["Pizza"]             = "Pizza",
-	["PaperPlanePickup"]        = "Paper Plane",
+	["PaperPlanePickup"]  = "Paper Plane",
 	["Lighter"]           = "Lighter",
 	["Flashlight"]        = "Flashlight",
 	["Lockpick"]          = "Lockpicks",
@@ -373,6 +384,8 @@ local GameData        = Services.ReplicatedStorage:WaitForChild("GameData")
 local Floor           = GameData:WaitForChild("Floor").Value
 local LatestRoom      = GameData:WaitForChild("LatestRoom")
 local FinishedLoadingRoom = GameData:FindFirstChild("FinishedLoadingRoom")
+local RunService = game:GetService("RunService")
+
 if FinishedLoadingRoom then
 	FinishedLoadingRoom:Destroy()
 end
@@ -1185,7 +1198,7 @@ local Window = Library:CreateWindow({
 	Center = true,
 	TabPadding = 3,
 	MenuFadeTime = 0,
-	CornerRadius = 2,
+	CornerRadius = 6,
 })
 
 Abysall.Interface.ApplyInfoTab(Window)
@@ -1196,6 +1209,7 @@ local Tabs = {
 	Visuals  = Window:AddTab("Visuals", "eye"),
 	Floors   = Window:AddTab("Floors", "earth"),
 	Archives  = Window:AddTab("New - Archives", "rbxassetid://104508835882225"),
+	Stairwell = Window:AddTab("New - Stairwell", "rbxassetid://80017304328364"),
 }
 
 Groupboxes.General_Character = Tabs.General:AddLeftGroupbox("Character")
@@ -1431,6 +1445,28 @@ Groupboxes.Debug:AddButton({
 	Func = function()
 		if not Character then return end
 		local Pivot = Character:GetPivot()
+		-- Too lazy to loop this
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
+		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
 		Character:PivotTo(Pivot + Vector3.new(0, -120 - Pivot.Position.Y, 0))
 	end
 })
@@ -1568,6 +1604,160 @@ Toggles.BypassJeff:OnChanged(function(Value)
 		end
 	end
 end)
+
+
+Groupboxes.General_AntiLag = Tabs.General:AddRightGroupbox("Anti-Lag")
+
+Groupboxes.General_AntiLag:AddToggle("AntiLagParticles", {
+    Text = "Disable Particles",
+    Default = false,
+    Tooltip = "Disables particle emitters locally."
+})
+
+Groupboxes.General_AntiLag:AddToggle("AntiLagTrails", {
+    Text = "Disable Trails / Beams",
+    Default = false,
+    Tooltip = "Disables Trails and Beams locally."
+})
+
+Groupboxes.General_AntiLag:AddToggle("AntiLagLights", {
+    Text = "Disable Lights",
+    Default = false,
+    Tooltip = "Disables PointLights, SpotLights, and SurfaceLights locally."
+})
+
+Groupboxes.General_AntiLag:AddToggle("AntiLagTextures", {
+    Text = "Hide Textures",
+    Default = false,
+    Tooltip = "Hides Decals and Textures locally."
+})
+
+Groupboxes.General_AntiLag:AddToggle("AntiLagMaterials", {
+    Text = "Reduce Materials",
+    Default = false,
+    Tooltip = "Changes BaseParts to SmoothPlastic locally."
+})
+
+Groupboxes.General_AntiLag:AddToggle("AntiLagEffects", {
+    Text = "Disable Post Effects",
+    Default = false,
+    Tooltip = "Disables post-processing effects locally."
+})
+
+Groupboxes.General_AntiLag:AddToggle("AntiLagShadows", {
+    Text = "Disable Shadows",
+    Default = false,
+    Tooltip = "Disables global lighting shadows locally."
+})
+
+local AntiLagOriginals = {
+    Particles = {},
+    Trails = {},
+    Lights = {},
+    Textures = {},
+    Materials = {},
+    Reflectance = {},
+    Effects = {},
+    GlobalShadows = Services.Lighting.GlobalShadows,
+}
+
+local function ApplyAntiLagToObject(Object)
+    if Object:IsA("ParticleEmitter") then
+        if AntiLagOriginals.Particles[Object] == nil then
+            AntiLagOriginals.Particles[Object] = Object.Enabled
+        end
+        Object.Enabled = Toggles.AntiLagParticles.Value and false or AntiLagOriginals.Particles[Object]
+
+    elseif Object:IsA("Trail") or Object:IsA("Beam") then
+        if AntiLagOriginals.Trails[Object] == nil then
+            AntiLagOriginals.Trails[Object] = Object.Enabled
+        end
+        Object.Enabled = Toggles.AntiLagTrails.Value and false or AntiLagOriginals.Trails[Object]
+
+    elseif Object:IsA("PointLight") or Object:IsA("SpotLight") or Object:IsA("SurfaceLight") then
+        if AntiLagOriginals.Lights[Object] == nil then
+            AntiLagOriginals.Lights[Object] = Object.Enabled
+        end
+        Object.Enabled = Toggles.AntiLagLights.Value and false or AntiLagOriginals.Lights[Object]
+
+    elseif Object:IsA("Decal") or Object:IsA("Texture") then
+        if AntiLagOriginals.Textures[Object] == nil then
+            AntiLagOriginals.Textures[Object] = Object.Transparency
+        end
+        Object.Transparency = Toggles.AntiLagTextures.Value and 1 or AntiLagOriginals.Textures[Object]
+
+    elseif Object:IsA("BasePart") then
+        if AntiLagOriginals.Materials[Object] == nil then
+            AntiLagOriginals.Materials[Object] = Object.Material
+        end
+        if AntiLagOriginals.Reflectance[Object] == nil then
+            AntiLagOriginals.Reflectance[Object] = Object.Reflectance
+        end
+        if Toggles.AntiLagMaterials.Value then
+            Object.Material = Enum.Material.SmoothPlastic
+            Object.Reflectance = 0
+        else
+            Object.Material = AntiLagOriginals.Materials[Object]
+            Object.Reflectance = AntiLagOriginals.Reflectance[Object]
+        end
+
+    elseif Object:IsA("PostEffect") then
+        if AntiLagOriginals.Effects[Object] == nil then
+            AntiLagOriginals.Effects[Object] = Object.Enabled
+        end
+        Object.Enabled = Toggles.AntiLagEffects.Value and false or AntiLagOriginals.Effects[Object]
+    end
+end
+
+game.DescendantAdded:Connect(ApplyAntiLagToObject)
+
+for _, Object in ipairs(game:GetDescendants()) do
+    task.spawn(ApplyAntiLagToObject, Object)
+end
+
+Toggles.AntiLagParticles:OnChanged(function()
+    for _, Object in ipairs(game:GetDescendants()) do
+        task.spawn(ApplyAntiLagToObject, Object)
+    end
+end)
+
+Toggles.AntiLagTrails:OnChanged(function()
+    for _, Object in ipairs(game:GetDescendants()) do
+        task.spawn(ApplyAntiLagToObject, Object)
+    end
+end)
+
+Toggles.AntiLagLights:OnChanged(function()
+    for _, Object in ipairs(game:GetDescendants()) do
+        task.spawn(ApplyAntiLagToObject, Object)
+    end
+end)
+
+Toggles.AntiLagTextures:OnChanged(function()
+    for _, Object in ipairs(game:GetDescendants()) do
+        task.spawn(ApplyAntiLagToObject, Object)
+    end
+end)
+
+Toggles.AntiLagMaterials:OnChanged(function()
+    for _, Object in ipairs(game:GetDescendants()) do
+        task.spawn(ApplyAntiLagToObject, Object)
+    end
+end)
+
+Toggles.AntiLagEffects:OnChanged(function()
+    for _, Object in ipairs(game:GetDescendants()) do
+        task.spawn(ApplyAntiLagToObject, Object)
+    end
+end)
+
+Toggles.AntiLagShadows:OnChanged(function(Value)
+    Services.Lighting.GlobalShadows = Value and false or AntiLagOriginals.GlobalShadows
+end)
+
+
+
+
 
 
 -- Archives
@@ -2241,7 +2431,8 @@ local InfCrucifixDropTable = {
 
 
 
-if Toggles.InfCrucifix.Value then
+Toggles.InfCrucifix:OnChanged(function(Value)
+	print("i allive")
 	local InfCrucifixRaycastParams = RaycastParams.new()
 	InfCrucifixRaycastParams.FilterType = Enum.RaycastFilterType.Blacklist
 
@@ -2254,7 +2445,7 @@ if Toggles.InfCrucifix.Value then
 			return
 		end
 
-		local InfCrucifixCharacter = shared.player.Character
+		local InfCrucifixCharacter = game.Players.LocalPlayer
 		if not InfCrucifixCharacter then
 			return
 		end
@@ -2296,7 +2487,7 @@ if Toggles.InfCrucifix.Value then
 			task.spawn(function()
 				ReplicatedStorage.RemotesFolder.DropItem:FireServer(InfCrucifixTool)
 				task.wait(0.54)
-
+				print("hi")
 				local InfCrucifixDrops = Workspace:FindFirstChild("Drops")
 				if not InfCrucifixDrops then
 					return
@@ -2312,13 +2503,11 @@ if Toggles.InfCrucifix.Value then
 					fireproximityprompt(InfCrucifixPrompt)
 				end
 			end)
-
+			print ("hi")
 			task.wait(0.6)
 		end
 	end)
-
-	shared.Connect:GiveSignal(InfCrucifixConnection)
-end
+end)
 
 
 Groupboxes.Exploits_BypassRight:AddDivider()
@@ -2406,9 +2595,22 @@ end)
 local Modules = {}
 
 Toggles.RemoveScreech:OnChanged(function(Value)
-	Modules.Screech.Name = Value and "Screech_Disabled" or "Screech"
-	if Modules.GlitchScreech then
-		Modules.GlitchScreech.Name = Value and "GlitchScreech_Disabled" or "GlitchScreech"
+	if Value then
+		task.spawn(function()
+			while Toggles.RemoveScreech.Value do
+				local Camera = workspace:FindFirstChild("Camera")
+
+				if Camera then
+					local Screech = Camera:FindFirstChild("Screech")
+
+					if Screech then
+						Screech:Destroy()
+					end
+				end
+
+				task.wait()
+			end
+		end)
 	end
 end)
 Toggles.RemoveHalt:OnChanged(function(Value)
@@ -2683,6 +2885,7 @@ Groupboxes.Visuals_ESP_Toggles:AddToggle("ObjectiveESPToggle", { Text = "Objecti
 Toggles.ObjectiveESPToggle:AddColorPicker("ObjectiveESPColor", { Text = "Objectives", Default = Color3.fromRGB(0, 255, 0), Transparency = 0 })
 
 local ObjectiveLabels = {
+	["Cellar"] 				   = "Cellar",
 	["ArchivesFihTank"]        = "Fih Tank",
 	["KeyObtain"]              = "Door Key",
 	["ElectricalKeyObtain"]    = "Electrical Key",
@@ -4242,6 +4445,9 @@ Functions.HandleObject = function(Object)
 				table.insert(Objects.Objectives, Object)
 			end
 		end)
+	elseif Name == "Cellar" then
+		if Toggles.ObjectiveESPToggle.Value then Functions.AddESP({ Object = Object, Text = "Cellar", Color = Options.ObjectiveESPColor.Value }, true) end
+		table.insert(Objects.Objectives, Object)
 	elseif Name == "ArchivesFihTank" then
 		if Toggles.ObjectiveESPToggle.Value then Functions.AddESP({ Object = Object, Text = "Fih Tank", Color = Options.ObjectiveESPColor.Value }, true) end
 		table.insert(Objects.Objectives, Object)
@@ -4942,7 +5148,7 @@ local AllowedInstances = {
 	MovingDoor=true, StardustPickup=true, Hole=true, Groundskeeper=true, MandrakeLive=true,
 	GardenGateButton=true, LotusPetalPickup=true, VineGuillotine=true, LiveEntityBramble=true, ArchivesFihTank=true,
 	RiftSpawn=true, ElevatorBreaker=true, RunnerNodes=true, PathLights=true, DuckBoard=true,
-	Padlock=true, EyestalkEndCutscene=true, MinecartRig=true, SeekMovingNewClone=true
+	Padlock=true, EyestalkEndCutscene=true, MinecartRig=true, SeekMovingNewClone=true, Cellar=true
 }
 
 Functions.QueueObject = function(Object)
@@ -5220,6 +5426,7 @@ Functions.TriggerPrompt = function(Prompt)
 	if Prompt.Parent.Name == "KeyObtainFake" or Prompt.Parent.Name == "TithingPlate" then return end
 
     -- archives
+	if Prompt.parent.Name == "ArchivesStorageBox" then return end
 	if Prompt.Parent.Name == "Briefcase" then return end
 	if Prompt.Name == "SinkPrompt" or Prompt.Parent.Name == "Faucet" then return end
 	if Prompt.Parent.Name == "PaperPlanePickup" or Prompt.Parent.Name == "PaperPlane" then return end
@@ -5610,6 +5817,7 @@ Library:OnUnload(function()
 	end
 
 	getgenv().Abysall = nil
+	shared.Hastelepasta = false
 end)
 
 
