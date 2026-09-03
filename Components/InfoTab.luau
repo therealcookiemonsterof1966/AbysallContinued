@@ -8,6 +8,7 @@ return function(Window)
 		"<font color='rgb(0, 255, 0)'>+ Added Sally Toy to ItemNames</font>",
 		"<font color='rgb(0, 255, 0)'>+ Added ArchivesStorageBox ignore in Auto Interact</font>",
 		"<font color='rgb(0, 255, 0)'>+ Added Cellar support in AllowedInstances</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added Anti-Lag Options In General Tab</font>",
 
 
 		"<font color='rgb(255, 255, 0)'>~ Increased Window CornerRadius (2 → 6)</font>",
