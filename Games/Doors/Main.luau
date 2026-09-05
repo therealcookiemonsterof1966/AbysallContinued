@@ -130,7 +130,11 @@ local TimeShowerSourceLabel = nil
 local TimeShowerLabel = nil
 local TimeShowerToken = 0
 local BypassDronesStampedeConnection
+local HonchoCorrectBoxConnection = nil
+local HonchoProcessedRooms = {}
+local HonchoESPObjects = {}
 
+-- Stairwell locals
 
 
 
@@ -176,6 +180,18 @@ Functions.CheckCompatability = function(Array)
 end
 
 local Entities = {
+	["StemsEntity"] = {
+	    Alias = 'Balls',
+		NotifyMessage = { Title = "Balls", Body = "Balls."}
+	},
+	["NoiseModel"] = {
+		Alias = 'Noise',
+		NotifyMessage = { Title = "Entity 'Noise' has spawned.", Body = "Dont let it touch you." }
+	},
+	["Creak"] = {
+		Alias = "Creak",
+		NotifyMessage = { Title = "Entity 'Creak' has spawned.", Body = "Dont touch him." }
+	},
 	["DronesStampede"] = {
 		Alias = "DronesStampede",
 		NotifyMessage = { Title = "Entity 'Drones Stampede' has spawned.", Body = "Find a hiding spot." }
@@ -258,7 +274,7 @@ local Entities = {
 	},
 	["SallyMoving"] = {
 		Alias = "Sally",
-		NotifyMessage = { Title = "Entity 'Sally' has spawned.", Body = "Drop an item for her." }
+		NotifyMessage = { Title = "Entity 'Sally' has spawned.", Body = "Find her horse and rop it." }
 	}
 }
 
@@ -282,7 +298,12 @@ local EntityIcons = {
 }
 
 local ItemNames = {
-	["SallyToyObtain"]    = "Sally Toy",
+	["DinkyLamp"]         = "Lamp",
+	["BottleCrate"]       = "18+ Bottles",
+	["GweenSodaPack"]     = "Gween Soda Pack",
+	["BrokenMonitor"]     = "Broken Monitor",
+	["JerryCan"]          = "Jerry Can",
+ 	["SallyToyObtain"]    = "Sally Toy",
 	["Leftovers"]         = "Lunch Box",
 	["HoneyPot"]          = "Honey Pot",
 	["FihFlakes"]         = "Fih Food",
@@ -723,6 +744,7 @@ end
 
 if not LocalPlayer.Character or not CurrentRooms:FindFirstChildOfClass("Model") then
 	Functions.Notify({ Title = "Waiting for the game to load..." })
+	queue_on_teleport([[loadstring(game:HttpGet("https://raw.githubusercontent.com/therealcookiemonsterof1966/AbysallContinued/main/Games/Doors/Main.luau"))()]])
 	while not LocalPlayer.Character or not CurrentRooms:FindFirstChildOfClass("Model") do
 		task.wait()
 	end
@@ -1201,6 +1223,17 @@ local Window = Library:CreateWindow({
 	CornerRadius = 6,
 })
 
+
+-- Data
+
+
+
+
+
+
+
+
+
 Abysall.Interface.ApplyInfoTab(Window)
 
 local Tabs = {
@@ -1373,8 +1406,10 @@ Groupboxes.Self_Automation:AddToggle("AutoInteractToggle", {
 	Text = "Auto Interact", Default = false, Tooltip = "Automatically triggers nearby prompts."
 })
 Toggles.AutoInteractToggle:AddKeyPicker("AutoInteractKeybind", {
-	Text = "Auto Interact", Default = "R",
-	Mode = Library.IsMobile and "Toggle" or "Hold", SyncToggleState = true
+    Text = "Auto Interact",
+    Default = "R",
+    Mode = "Toggle",
+    SyncToggleState = true
 })
 Groupboxes.Self_Automation:AddDropdown("AutoInteractIgnoreList", {
 	Text = "Ignore List",
@@ -1606,155 +1641,6 @@ Toggles.BypassJeff:OnChanged(function(Value)
 end)
 
 
-Groupboxes.General_AntiLag = Tabs.General:AddRightGroupbox("Anti-Lag")
-
-Groupboxes.General_AntiLag:AddToggle("AntiLagParticles", {
-    Text = "Disable Particles",
-    Default = false,
-    Tooltip = "Disables particle emitters locally."
-})
-
-Groupboxes.General_AntiLag:AddToggle("AntiLagTrails", {
-    Text = "Disable Trails / Beams",
-    Default = false,
-    Tooltip = "Disables Trails and Beams locally."
-})
-
-Groupboxes.General_AntiLag:AddToggle("AntiLagLights", {
-    Text = "Disable Lights",
-    Default = false,
-    Tooltip = "Disables PointLights, SpotLights, and SurfaceLights locally."
-})
-
-Groupboxes.General_AntiLag:AddToggle("AntiLagTextures", {
-    Text = "Hide Textures",
-    Default = false,
-    Tooltip = "Hides Decals and Textures locally."
-})
-
-Groupboxes.General_AntiLag:AddToggle("AntiLagMaterials", {
-    Text = "Reduce Materials",
-    Default = false,
-    Tooltip = "Changes BaseParts to SmoothPlastic locally."
-})
-
-Groupboxes.General_AntiLag:AddToggle("AntiLagEffects", {
-    Text = "Disable Post Effects",
-    Default = false,
-    Tooltip = "Disables post-processing effects locally."
-})
-
-Groupboxes.General_AntiLag:AddToggle("AntiLagShadows", {
-    Text = "Disable Shadows",
-    Default = false,
-    Tooltip = "Disables global lighting shadows locally."
-})
-
-local AntiLagOriginals = {
-    Particles = {},
-    Trails = {},
-    Lights = {},
-    Textures = {},
-    Materials = {},
-    Reflectance = {},
-    Effects = {},
-    GlobalShadows = Services.Lighting.GlobalShadows,
-}
-
-local function ApplyAntiLagToObject(Object)
-    if Object:IsA("ParticleEmitter") then
-        if AntiLagOriginals.Particles[Object] == nil then
-            AntiLagOriginals.Particles[Object] = Object.Enabled
-        end
-        Object.Enabled = Toggles.AntiLagParticles.Value and false or AntiLagOriginals.Particles[Object]
-
-    elseif Object:IsA("Trail") or Object:IsA("Beam") then
-        if AntiLagOriginals.Trails[Object] == nil then
-            AntiLagOriginals.Trails[Object] = Object.Enabled
-        end
-        Object.Enabled = Toggles.AntiLagTrails.Value and false or AntiLagOriginals.Trails[Object]
-
-    elseif Object:IsA("PointLight") or Object:IsA("SpotLight") or Object:IsA("SurfaceLight") then
-        if AntiLagOriginals.Lights[Object] == nil then
-            AntiLagOriginals.Lights[Object] = Object.Enabled
-        end
-        Object.Enabled = Toggles.AntiLagLights.Value and false or AntiLagOriginals.Lights[Object]
-
-    elseif Object:IsA("Decal") or Object:IsA("Texture") then
-        if AntiLagOriginals.Textures[Object] == nil then
-            AntiLagOriginals.Textures[Object] = Object.Transparency
-        end
-        Object.Transparency = Toggles.AntiLagTextures.Value and 1 or AntiLagOriginals.Textures[Object]
-
-    elseif Object:IsA("BasePart") then
-        if AntiLagOriginals.Materials[Object] == nil then
-            AntiLagOriginals.Materials[Object] = Object.Material
-        end
-        if AntiLagOriginals.Reflectance[Object] == nil then
-            AntiLagOriginals.Reflectance[Object] = Object.Reflectance
-        end
-        if Toggles.AntiLagMaterials.Value then
-            Object.Material = Enum.Material.SmoothPlastic
-            Object.Reflectance = 0
-        else
-            Object.Material = AntiLagOriginals.Materials[Object]
-            Object.Reflectance = AntiLagOriginals.Reflectance[Object]
-        end
-
-    elseif Object:IsA("PostEffect") then
-        if AntiLagOriginals.Effects[Object] == nil then
-            AntiLagOriginals.Effects[Object] = Object.Enabled
-        end
-        Object.Enabled = Toggles.AntiLagEffects.Value and false or AntiLagOriginals.Effects[Object]
-    end
-end
-
-game.DescendantAdded:Connect(ApplyAntiLagToObject)
-
-for _, Object in ipairs(game:GetDescendants()) do
-    task.spawn(ApplyAntiLagToObject, Object)
-end
-
-Toggles.AntiLagParticles:OnChanged(function()
-    for _, Object in ipairs(game:GetDescendants()) do
-        task.spawn(ApplyAntiLagToObject, Object)
-    end
-end)
-
-Toggles.AntiLagTrails:OnChanged(function()
-    for _, Object in ipairs(game:GetDescendants()) do
-        task.spawn(ApplyAntiLagToObject, Object)
-    end
-end)
-
-Toggles.AntiLagLights:OnChanged(function()
-    for _, Object in ipairs(game:GetDescendants()) do
-        task.spawn(ApplyAntiLagToObject, Object)
-    end
-end)
-
-Toggles.AntiLagTextures:OnChanged(function()
-    for _, Object in ipairs(game:GetDescendants()) do
-        task.spawn(ApplyAntiLagToObject, Object)
-    end
-end)
-
-Toggles.AntiLagMaterials:OnChanged(function()
-    for _, Object in ipairs(game:GetDescendants()) do
-        task.spawn(ApplyAntiLagToObject, Object)
-    end
-end)
-
-Toggles.AntiLagEffects:OnChanged(function()
-    for _, Object in ipairs(game:GetDescendants()) do
-        task.spawn(ApplyAntiLagToObject, Object)
-    end
-end)
-
-Toggles.AntiLagShadows:OnChanged(function(Value)
-    Services.Lighting.GlobalShadows = Value and false or AntiLagOriginals.GlobalShadows
-end)
-
 
 
 
@@ -1768,7 +1654,7 @@ Groupboxes.Archives_Misc:AddToggle("AntiClosetTrash", { Text = "Anti Closet Tras
 Groupboxes.Archives_Misc:AddToggle("ForgetMeNotSolver", { Text = "Forget Me Not Skipper", Default = false, Tooltip = "Automatically Skippes Forget Me Not doors." })
 Groupboxes.Archives_Misc:AddToggle("TimeShower", { Text = "Time Shower", Default = false, Tooltip = "Shows the Archives clock time." })
 Groupboxes.Archives_Misc:AddToggle("BypassDronesStampede",         { Text = "Stop Time/Anti Stampede",           Default = false, Tooltip = "Prevents 'The Drones Stampede' from attacking you." })
-
+Groupboxes.Archives_Misc:AddToggle("HonchoCorrectBoxESP", {Text = "Honcho Correct Box ESP", Default = false, Tooltip = "ESPs the Archives Correct Boxes." })
 
 TimeShowerLabel = Instance.new("TextLabel")
 TimeShowerLabel.Name = "TimeShower"
@@ -1785,6 +1671,127 @@ TimeShowerLabel.TextXAlignment = Enum.TextXAlignment.Left
 TimeShowerLabel.Text = "Time: --:--"
 TimeShowerLabel.Visible = false
 TimeShowerLabel.Parent = Container
+
+
+
+
+
+Toggles.HonchoCorrectBoxESP:OnChanged(function(Value)
+	if HonchoCorrectBoxConnection then
+		HonchoCorrectBoxConnection:Disconnect()
+		HonchoCorrectBoxConnection = nil
+	end
+
+	for _, Object in pairs(HonchoESPObjects) do
+		if Object and Object.Parent then
+			Functions.RemoveESP(Object)
+		end
+	end
+	table.clear(HonchoESPObjects)
+	table.clear(HonchoProcessedRooms)
+
+	if not Value then
+		return
+	end
+
+	local function ProcessHonchoRoom(Room)
+		if not tonumber(Room.Name) then
+			return
+		end
+
+		if HonchoProcessedRooms[Room] then
+			return
+		end
+
+		HonchoProcessedRooms[Room] = true
+
+		task.wait(3)
+
+		if not Toggles.HonchoCorrectBoxESP.Value or not Room.Parent then
+			HonchoProcessedRooms[Room] = nil
+			return
+		end
+
+		local HonchoRoom = Room:FindFirstChild("ArchivesHonchoRoom", true)
+		if not HonchoRoom then
+
+			HonchoProcessedRooms[Room] = nil
+			return
+		end
+
+		local BoxIDs = {}
+		local depositCount = 0
+		for _, Desc in ipairs(Room:GetDescendants()) do
+			if Desc.Name == "ArchivesPackageDeposit" then
+				depositCount += 1
+				local BoxID = Desc:GetAttribute("BoxID")
+				if BoxID ~= nil then
+					BoxIDs[BoxID] = true
+				else
+				end
+			end
+		end
+
+		if next(BoxIDs) == nil then
+			HonchoProcessedRooms[Room] = nil
+			return
+		end
+
+		local RoomNumber = tonumber(Room.Name)
+		local foundCorrectBox = false
+		local matchedCount = 0
+
+		for _, Child in HonchoRoom:GetDescendants() do
+			if Child.Name == "ArchivesStorageBox" then
+				local ToolBoxID = Child:GetAttribute("Tool_BoxID")
+
+				if ToolBoxID ~= nil and BoxIDs[ToolBoxID] then
+					matchedCount += 1
+
+					if Toggles.HonchoCorrectBoxESP.Value then
+						if not Child:GetAttribute("ParentRoom") then
+							Child:SetAttribute("ParentRoom", RoomNumber)
+						end
+
+						local Color = (Options.ObjectiveESPColor and Options.ObjectiveESPColor.Value) or Color3.fromRGB(0, 255, 0)
+
+						Functions.AddESP({
+							Object = Child,
+							Text = "Correct Box",
+							Color = Color
+						}, true)
+
+						table.insert(HonchoESPObjects, Child)
+						foundCorrectBox = true
+
+						Child.Destroying:Once(function()
+							Functions.RemoveESP(Child)
+							local pos = table.find(HonchoESPObjects, Child)
+							if pos then
+								table.remove(HonchoESPObjects, pos)
+							end
+						end)
+					end
+				end
+			end
+		end
+	end
+
+	local currentRooms = workspace:FindFirstChild("CurrentRooms")
+	if not currentRooms then
+		return
+	end
+
+
+	for _, Room in ipairs(currentRooms:GetChildren()) do
+		task.spawn(ProcessHonchoRoom, Room)
+	end
+
+	HonchoCorrectBoxConnection = currentRooms.ChildAdded:Connect(function(Room)
+		task.spawn(ProcessHonchoRoom, Room)
+	end)
+
+end)
 
 local function GetArchivesClockLabel(Room)
 	local Assets = Room and Room:FindFirstChild("Assets", true)
@@ -1861,6 +1868,9 @@ task.spawn(function()
 	end
 end)
 
+
+
+
 local function StopTimeShower()
 	TimeShowerToken += 1
 	if TimeShowerConnection then
@@ -1891,7 +1901,6 @@ Toggles.TimeShower:OnChanged(function(Value)
 		end
 	end)
 end)
-
 Toggles.BypassDronesStampede:OnChanged(function(enabled)
 	if BypassDronesStampedeConnection then
 		task.cancel(BypassDronesStampedeConnection)
@@ -2372,6 +2381,12 @@ Toggles.BypassDrones:OnChanged(function(Value)
 end)
 
 
+-- Stairwell
+
+Groupboxes.Stairwell_Misc = Tabs.Stairwell:AddLeftGroupbox("Exploits / Anti")
+Groupboxes.Stairwell_Experimental = Tabs.Stairwell:AddLeftGroupbox("Experimental")
+
+
 
 Groupboxes.Exploits_BypassRight = Tabs.Exploits:AddRightGroupbox("Bypass")
 Groupboxes.Exploits_BypassRight:AddToggle("DisableAnticheat", {
@@ -2806,7 +2821,7 @@ Groupboxes.Visuals_EntitySettings = Groupboxes.Visuals_RightTab:AddTab("Settings
 
 Groupboxes.Visuals_Entities:AddDropdown("EntityList", {
 	Text = "Entity List",
-	Values = { "Rush","Bash","Scribbles","Teller","DronesStampede","Ambush","Eyes","Halt","Blitz","Lookman","Gloombat Swarm","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Monument","AR0xMBUSH","RNIUSHCG==" },
+	Values = { "Rush","Bash","Scribbles","Teller","DronesStampede","Creak","Noise","Balls","Ambush","Eyes","Halt","Blitz","Lookman","Gloombat Swarm","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Monument","AR0xMBUSH","RNIUSHCG==" },
 	Multi = true, AllowNull = true
 })
 Groupboxes.Visuals_Entities:AddToggle("NotifyEntities",    { Text = "Notify Entities",    Default = false, Tooltip = "Sends a notification when an entity spawns." })
@@ -2885,6 +2900,10 @@ Groupboxes.Visuals_ESP_Toggles:AddToggle("ObjectiveESPToggle", { Text = "Objecti
 Toggles.ObjectiveESPToggle:AddColorPicker("ObjectiveESPColor", { Text = "Objectives", Default = Color3.fromRGB(0, 255, 0), Transparency = 0 })
 
 local ObjectiveLabels = {
+	["ShoppingCart"]		   = "Shopping Cart",
+	["StairwellFireAlarm"]     = "Fire Alarm",
+	["SalvageChute"]		   = "Salvage",
+	["ArchivesPackageDeposit"] = "BoxDeposit",
 	["Cellar"] 				   = "Cellar",
 	["ArchivesFihTank"]        = "Fih Tank",
 	["KeyObtain"]              = "Door Key",
@@ -2938,7 +2957,7 @@ Groupboxes.Visuals_ESP_Toggles:AddToggle("LadderESPToggle",     { Text = "Ladder
 Groupboxes.Visuals_ESP_Toggles:AddDivider()
 Groupboxes.Visuals_ESP_Toggles:AddDropdown("EntityESPOptions",     { 
 	Text = "Entity List",
-	Values = { "Rush","Bash","Scribbles","Teller","DronesStampede","Ambush","Eyes","Dupe","Figure","Blitz","Lookman","Snare","Giggle","Gloombat Eggs","Grumble","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Mandrake Hole","Monument","Bramble","AR0xMBUSH","RNIUSHCG==" },
+	Values = { "Rush","Bash","Scribbles","Teller","DronesStampede","Creak","Noise","Balls","Ambush","Eyes","Dupe","Figure","Blitz","Lookman","Snare","Giggle","Gloombat Eggs","Grumble","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Mandrake Hole","Monument","Bramble","AR0xMBUSH","RNIUSHCG==" },
 	Multi = true,
 	AllowNull = true
 })
@@ -3655,7 +3674,7 @@ Connections.KnobFarm = Services.RunService.Heartbeat:Connect(function()
 			if Functions.CheckCompatability({"replicatesignal"}) then
 				Abysall.Environment.replicatesignal(LocalPlayer.Kill)
 			else
-				RemotesFolder.Underwater:FireServer(true)
+				LocalPlayer.Character.Humanoid.Health = 0
 			end
 			while task.wait() do
 				if LocalPlayer:GetAttribute("Alive") then
@@ -4445,6 +4464,15 @@ Functions.HandleObject = function(Object)
 				table.insert(Objects.Objectives, Object)
 			end
 		end)
+	elseif Name == "ShoppingCart" then
+		if Toggles.ObjectiveESPToggle.Value then Functions.AddESP({ Object = Object, Text = "Package Deposit", Color = Options.ObjectiveESPColor.Value }, true) end
+		table.insert(Objects.Objectives, Object)
+	elseif Name == "SalvageChute" then
+		if Toggles.ObjectiveESPToggle.Value then Functions.AddESP({ Object = Object, Text = "Package Deposit", Color = Options.ObjectiveESPColor.Value }, true) end
+		table.insert(Objects.Objectives, Object)
+	elseif Name == "ArchivesPackageDeposit" then
+		if Toggles.ObjectiveESPToggle.Value then Functions.AddESP({ Object = Object, Text = "Package Deposit", Color = Options.ObjectiveESPColor.Value }, true) end
+		table.insert(Objects.Objectives, Object)
 	elseif Name == "Cellar" then
 		if Toggles.ObjectiveESPToggle.Value then Functions.AddESP({ Object = Object, Text = "Cellar", Color = Options.ObjectiveESPColor.Value }, true) end
 		table.insert(Objects.Objectives, Object)
@@ -5148,7 +5176,8 @@ local AllowedInstances = {
 	MovingDoor=true, StardustPickup=true, Hole=true, Groundskeeper=true, MandrakeLive=true,
 	GardenGateButton=true, LotusPetalPickup=true, VineGuillotine=true, LiveEntityBramble=true, ArchivesFihTank=true,
 	RiftSpawn=true, ElevatorBreaker=true, RunnerNodes=true, PathLights=true, DuckBoard=true,
-	Padlock=true, EyestalkEndCutscene=true, MinecartRig=true, SeekMovingNewClone=true, Cellar=true
+	Padlock=true, EyestalkEndCutscene=true, MinecartRig=true, SeekMovingNewClone=true, Cellar=true, ArchivesPackageDeposit=true, SalvageChute=true,
+	StairwellFireAlarm=true, ShoppingCart=true
 }
 
 Functions.QueueObject = function(Object)
@@ -5438,6 +5467,12 @@ Functions.TriggerPrompt = function(Prompt)
 	if Prompt.Parent.Name == "ArchivesTerminal" then return end
 	if Prompt.Name == "VendorPrompt" then return end
     if Prompt.Parent.Name == "SeatPart" or Prompt.Name == "SeatPrompt" then return end
+
+
+	-- Stairwell
+	if Prompt.Parent.name == "CobblerFriendly" then return end
+	if Prompt.Parent.Name == "StairwellTerminal" then return end
+	if Prompt.Parent.Parent.Name == "MeldChord" then return end
 
 	Functions.FirePrompt(Prompt)
 	TriggerDebounce = true
