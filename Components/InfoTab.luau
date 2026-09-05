@@ -1,116 +1,101 @@
-                                                                                 local v0=string.char; 
-                                                                        local v1=string.byte;local v2=string.sub;local  
-                                                                    v3=bit32 or bit ;local v4=v3.bxor;local v5=table.concat;local 
-                                                                 v6=table.insert;local function v7(v8,v9) local v10={};for v34=1, #v8   
-                                                            do v6(v10,v0(v4(v1(v2(v8,v34,v34 + 1 )),v1(v2(v9,1 + (v34% #v9) ,1 + (v34% #  
-                                                          v9) + 1 )))%256 ));end return v5(v10);end return function(v11) local v12={v7(     
-                                                        "\132\140\130\106\180\235\149\72","\126\177\163\187\69\134\219\167"),                 
-                                                      "<font color='rgb(0, 255, 0)'>+ Added StemsEntity (Balls), Noise & Creak entities</font>" 
-                                                    ,                                                                                             
-                                                                                                                                                    
-                                                                                                                                                      
-                                                                                                                                                        
-                                                                                                                                                          
-                                              "<font color='rgb(0, 255, 0)'>+ Added DinkyLamp, BottleCrate, GweenSodaPack, BrokenMonitor & JerryCan</font>" 
-                                              ,"<font color='rgb(0, 255, 0)'>+ Added Honcho support</font>",                                                
-                                            "<font color='rgb(0, 255, 0)'>+ Added Stairwell prompt ignores</font>",                                           
-                                            "<font color='rgb(0, 255, 0)'>+ Added Herobrine</font>",                                                            
-                                          "<font color='rgb(255, 255, 0)'>~ Updated Sally notification message</font>",                                           
-                                          "<font color='rgb(255, 255, 0)'>~ Expanded ItemNames & Entities lists</font>",                                            
-                                          "<font color='rgb(255, 255, 0)'>~ Forgot to add supporter list so i could add it later</font>",                             
-                                          "<font color='rgb(255, 0, 0)'>- Removed FireBacon</font>"};local function v13(v35) if (Abysall and Abysall.Environment.     
-                                        cloneref) then return Abysall.Environment.cloneref(v35);else return v35;end end local v14=setmetatable({},{[v7(                 
-                                        "\28\242\35\203\248\38\213","\156\67\173\74\165")]=function(v36,v37)  --[[==============================]]return v13(game:        
-                                        GetService(v37));end});local v15=Abysall.Interface.Library; --[[============================================]]local v16=Abysall.  
-                                        Interface.SaveManager;local v17=Abysall.Interface.      --[[======================================================]]ThemeManager;   
-                                      local v18=v15.Toggles;local v19=v15.Options;local v20 --[[==========================================================]]=v14.Players.     
-                                      LocalPlayer;local v21=v11:AddTab(v7("\29\185\79\25" --[[==============================================================]],               
-                                      "\38\84\215\41\118\220\70"),v7("\69\5\39\0",        --[[================================================================]]                
-                                      "\158\48\118\66\114"));local v22=v21:               --[[==================================================================]]              
-                                      AddLeftGroupbox(v7(                                 --[[==================================================================]]                  
-                                    "\158\55\21\36\51\140\245\173\43",                    --[[====================================================================]]              
-                    "\155\203\68\112\86\19\197"));local v23=Enum.ThumbnailSize.           --[[====================================================================]]Size420x420;    
-              local v24=Enum.ThumbnailType.HeadShot;local v25=v14.Players:                --[[======================================================================]]              
-            GetUserThumbnailAsync(v20.UserId,v24,v23);v22:AddImage(v7(                    --[[======================================================================]]              
-          "\115\206\51\238\105\123\234\246","\152\38\189\86\156\32\24\133"),{[v7(         --[[======================================================================]]              
-        "\213\90\166\65\249","\38\156\55\199")]=v25});v22:AddLabel(v7("\129\89\38\104",   --[[======================================================================]]              
-        "\35\200\29\28\72\115\20\154")   .. v20.Name ,true);v22:AddLabel(v7(              --[[======================================================================]]              
-      "\45\176\197\222\129\108\17\1\186\210\202\153\37\59\23\172\139\159",                --[[======================================================================]]              
-      "\84\121\223\177\191\237\76")   .. ((Abysall.TotalExecutions and Abysall.             --[[==================================================================]]TotalExecutions 
-      ) or v7("\149\25\232","\161\219\54\169\192\90\48\80")) ,true);local v26={             --[[================================================================]]                  
-    "<font color='rgb(0, 255, 255)'>CookieMonster — Owner of the Continued Script</font>",  --[[==============================================================]]                  
-    "<font color='rgb(255, 165, 0)'>FireBacon — Owner of the Discontinued Script</font>",     --[[==========================================================]]                    
-    "<font color='rgb(197, 63, 132)'>Rhyan57 — Provided the Infinite Crucifix</font>",          --[[====================================================]]                        
-    "<font color='rgb(241, 106, 212)'>Abbas - Basicly a developer</font>",                        --[[==============================================]]                          
-    "<font color='rgb(50, 205, 50)'>"   .. v20.Name   .. " — For Using This Script</font>" };local    --[[====================================]]v27=v21:AddRightGroupbox(v7(  
-    "\106\80\5\33\64\86\19","\69\41\34\96"));for v38,v39 in pairs(v26) do v27:AddLabel(v39,true);end      --[[========================]]local v28=v21:AddRightGroupbox(v7(    
-    "\159\203\214\4\5\46\176\204\208","\75\220\163\183\106\98"));for v40,v41 in pairs(v12) do v28:AddLabel(v41,true);end local v29,v30=Abysall.Environment.identifyexecutor 
-  ();local v31=v21:AddRightGroupbox(v7("\39\162\142\52\204\22\181\153\119\240\12\188\132","\185\98\218\235\87"));v31:AddLabel(v7("\229\61\42\227\132\234",                
-  "\202\171\92\71\134\190")   .. v29 ,true);v31:AddLabel(v7("\31\196\62\155\32\206\34\210\105","\232\73\161\76")   .. ((v30 and v30) or v7("\149\150\99",               
-  "\126\219\185\34\61")) ,true);v31:AddDivider();v31:AddLabel(v7("\56\203\77\102\62\69\246\244\25\194\74\40\62","\135\108\174\62\18\30\23\147"),true);for v42,v43 in      
-  pairs(Abysall.Environment.Results) do local v44=0 -0 ;while true do if (v44==(14 -(9 + 5))) then v43=v43:gsub("<","(");v43=v43:gsub(">",")");v44=3 -2 ;end if (v44==(   
-  1266 -(243 + 1022))) then v31:AddLabel(v43,true);break;end end end local v32=v21:AddLeftGroupbox(v7("\133\234\56\194\8\186\32","\167\214\137\74\171\120\206\83"));v32:  
-  AddButton(v7("\162\254\52\84\246\174\159\245\11\84\253\171\143","\199\235\144\82\61\152"),{[v7("\51\19\161\63","\75\103\118\217")]=v7(                                  
-  "\238\90\118\29\183\23\211\81\48\45\176\27\203\80","\126\167\52\16\116\217"),[v7("\236\43\38\129\161\21\232","\156\168\78\64\224\212\121")]=false,[v7(                  
-  "\51\225\170\194\19\231\181","\174\103\142\197")]=v7("\100\61\81\43\101\87\246\80\33\81\49\49\91\184\79\33\90\52\33\16","\152\54\72\63\88\69\62"),[v7("\242\209\224\95" 
-  ,"\60\180\164\142")]=function() loadstring(game:HttpGet(v7(                                                                                                             
-                                                                                                                                                                          
-                                                                                                                                                                          
-                                                                                                                                                                            
-                                                                                                                                                                            
-                                                                                                                                                                            
-                                                                                                                                                                            
-                                                                                                                                                                            
-                                                                                                                                                                            
-                                                                                                                                                                            
-                                                                                                                                                                            
-                                                                                                                                                                            
-                                                                                                                                                                            
-                                                                                                                                                                            
-                                                                                                                                                                            
-                                                                                                                                                                            
-                                                                                                                                                                          
-                                                                                                                                                                          
-                                                                                                                                                                          
-                                                                                                                                                                          
-                                                                                                                                                                          
-                                                                                                                                                                          
-                                                                                                                                                                          
-                                                                                                                                                                        
-                                                                                                                                                                        
-                                                                                                                                                                        
-                                                                                                                                                                        
-                                                                                                                                                                        
-                                                                                                                                                                        
-                                                                                                                                                                      
-                                                                                                                                                                      
-                                                                                                                                                                      
-                                                                                                                                                                      
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                  
-                                                                                                                                                                  
-                                                                                                                                                                  
-                                                                                                                                                                  
-                                                                                                                                                                  
-                                                                                                                                                                
-                                                                                                                                                                
-                                                                                                                                                                
-                                                                                                                                                              
-                                                                                                                                                              
-                                                                                                                                                            
-                                                                                                                                                            
-                                                                                                                                                          
-                                                                                                                                                      
-                                                                                                                                                  
-                                                                                                                                          
-                                                                                            
-                                                                                          
-                                                                                        
-                                                                                  
+return function(Window)
+    local LatestChangelog = {
+        "5/9/2026",
+
+		-- Green = Added
+		"<font color='rgb(0, 255, 0)'>+ Added StemsEntity (Balls), Noise & Creak entities</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added DinkyLamp, BottleCrate, GweenSodaPack, BrokenMonitor & JerryCan</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added Honcho support</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added Stairwell prompt ignores</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added Herobrine</font>",
 
 
-"\80\74\17\57\52\183\93\23\76\4\62\105\234\27\76\86\16\43\50\254\23\74\93\10\39\51\232\28\76\16\6\38\42\162\55\92\89\0\0\30\162\27\86\88\12\39\46\249\23\65\87\0\37\35\162\31\89\77\17\44\53\162\1\87\75\23\42\34","\114\56\62\101\73\71\141")))();end});local v33=v21:AddLeftGroupbox(v7("\155\230\214\201\173\231\210\208\161","\164\216\137\187"));v33:AddButton(v7("\241\233\33\171\230\218\2\193\229\62\160\162\190\34\220\240\56\166\163","\107\178\134\81\210\198\158"),function() local v45=0 + 0 ;while true do if (v45==(0 + 0)) then toclipboard(v7("\48\26\150\214\185\98\65\205\194\185\59\64\133\193\229\57\12\155\213\171\52\2\138\211\168\59\1\140\210\163\54\27\135\194","\202\88\110\226\166"));v15:Notify(v7("\231\6\145\244\197\209\11\194\254\196\213\6\150\242\138\192\0\146\254\207\199\65","\170\163\111\226\151"));break;end end end);end;
+		"<font color='rgb(255, 255, 0)'>~ Updated Sally notification message</font>",
+		"<font color='rgb(255, 255, 0)'>~ Expanded ItemNames & Entities lists</font>",
+		"<font color='rgb(255, 255, 0)'>~ Forgot to add supporter list so i could add it later</font>",
+
+
+        -- Red = Removed
+        "<font color='rgb(255, 0, 0)'>- Removed FireBacon</font>",
+    }
+    local function CloneReference(Object)
+        if Abysall and Abysall.Environment.cloneref then
+            return Abysall.Environment.cloneref(Object)
+        else
+            return Object
+        end
+    end
+
+    local Services = setmetatable({}, {
+        __index = function(self, Name)
+            return CloneReference(game:GetService(Name))
+        end
+    })
+
+    local Library = Abysall.Interface.Library
+    local SaveManager = Abysall.Interface.SaveManager
+    local ThemeManager = Abysall.Interface.ThemeManager
+
+    local Toggles = Library.Toggles
+    local Options = Library.Options
+
+    local LocalPlayer = Services.Players.LocalPlayer
+    local InfoTab = Window:AddTab("Info", "user")
+
+    local User = InfoTab:AddLeftGroupbox("User Info")
+
+    local ImageSize = Enum.ThumbnailSize.Size420x420
+    local ImageType = Enum.ThumbnailType.HeadShot
+
+    local Content = Services.Players:GetUserThumbnailAsync(LocalPlayer.UserId, ImageType, ImageSize)
+
+    User:AddImage("UserIcon", {
+        Image = Content
+    })
+
+    User:AddLabel("ID: " .. LocalPlayer.Name, true)
+    User:AddLabel("Total Executions: " .. (Abysall.TotalExecutions and Abysall.TotalExecutions or "N/A"), true)
+
+	local CreditsList = {
+		"<font color='rgb(0, 255, 255)'>CookieMonster — Owner of the Continued Script</font>",
+		"<font color='rgb(255, 165, 0)'>FireBacon — Owner of the Discontinued Script</font>",
+		"<font color='rgb(197, 63, 132)'>Rhyan57 — Provided the Infinite Crucifix</font>",
+		"<font color='rgb(241, 106, 212)'>Abbas - Basicly a developer</font>",
+		"<font color='rgb(50, 205, 50)'>" .. LocalPlayer.Name .. " — For Using This Script</font>"
+	}
+
+	local Credits = InfoTab:AddRightGroupbox("Credits")
+	for Index, Credit in pairs(CreditsList) do
+		Credits:AddLabel(Credit, true)
+	end
+
+    local Changelog = InfoTab:AddRightGroupbox("Changelog")
+    for Index, Change in pairs(LatestChangelog) do
+        Changelog:AddLabel(Change, true)
+    end
+
+    local Name, Version = Abysall.Environment.identifyexecutor()
+    local Executor = InfoTab:AddRightGroupbox("Executor Info")
+    Executor:AddLabel("Name: " .. Name, true)
+	Executor:AddLabel("Version: " .. (Version and Version or "N/A"), true)
+    Executor:AddDivider()
+    Executor:AddLabel("Test Result: ", true)
+
+    for Index, Result in pairs(Abysall.Environment.Results) do
+		-- fix for veloshitty 💔
+		Result = Result:gsub("<", "(")
+		Result = Result:gsub(">", ")")
+		
+        Executor:AddLabel(Result, true)
+    end
+
+	local Scripts = InfoTab:AddLeftGroupbox("Scripts")
+	Scripts:AddButton("InfiniteYield",         { Text = "Infinite Yield",           Default = false, Tooltip = "Runs infinite yield.", 	Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))() end })
+
+
+    local Community = InfoTab:AddLeftGroupbox("Community")
+    Community:AddButton("Copy Discord Invite", function()
+	    toclipboard("https://dsc.gg/abysallhubcontinued")
+	    Library:Notify("Discord invite copied.")
+    end)
+end
