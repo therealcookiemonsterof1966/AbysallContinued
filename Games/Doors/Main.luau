@@ -2386,7 +2386,74 @@ end)
 Groupboxes.Stairwell_Misc = Tabs.Stairwell:AddLeftGroupbox("Exploits / Anti")
 Groupboxes.Stairwell_Experimental = Tabs.Stairwell:AddLeftGroupbox("Experimental")
 
+Groupboxes.Stairwell_Experimental:AddToggle("AntiNoise", { Text = "Anti Noise", Default = false, Tooltip = "Prevents the game from making noise when moving (Visual studio auto ai lmfao ✌)." })
 
+Toggles.AntiNoise:OnChanged(function(value)
+	for i, conn in ipairs(Connections) do
+		if conn.Disconnect then
+			conn:Disconnect()
+			table.remove(Connections, i)
+		end
+	end
+
+	local antiNoiseConn = RunService.PreSimulation:Connect(function(dt)
+		if not value then return end
+		if not LocalPlayer:GetAttribute("Alive") then return end
+
+		local character = LocalPlayer.Character
+		if not character then return end
+
+		local rootPart = character:FindFirstChild("HumanoidRootPart")
+		local humanoid = character:FindFirstChildOfClass("Humanoid")
+		local camera = workspace.CurrentCamera
+
+		if not rootPart or not humanoid or not camera then return end
+		if humanoid.Health <= 0 then return end
+		if rootPart.Anchored then return end
+
+		local state = humanoid:GetState()
+		if state == Enum.HumanoidStateType.Dead
+			or state == Enum.HumanoidStateType.Ragdoll
+			or state == Enum.HumanoidStateType.Climbing
+			or state == Enum.HumanoidStateType.Swimming
+		then
+			return
+		end
+
+		humanoid.AutoRotate = false
+		humanoid:Move(Vector3.zero, false)
+
+		local inputVector = Controls:GetMoveVector()
+		local inputMagnitude = inputVector.Magnitude
+
+		if inputMagnitude <= 0 then
+			rootPart.AssemblyLinearVelocity = Vector3.zero
+			return
+		end
+
+		local cameraCFrame = camera.CFrame
+		local cameraForward = Vector3.new(cameraCFrame.LookVector.X, 0, cameraCFrame.LookVector.Z)
+		local cameraRight = Vector3.new(cameraCFrame.RightVector.X, 0, cameraCFrame.RightVector.Z)
+
+		if cameraForward.Magnitude < 0.001 or cameraRight.Magnitude < 0.001 then return end
+
+		cameraForward = cameraForward.Unit
+		cameraRight = cameraRight.Unit
+
+		local worldDirection = (cameraRight * inputVector.X) + (cameraForward * -inputVector.Z)
+		if worldDirection.Magnitude <= 0 then return end
+		worldDirection = worldDirection.Unit
+
+		local finalSpeed = humanoid.WalkSpeed * math.clamp(inputMagnitude, 0, 1)
+		local clampedDt = math.clamp(dt, 0, 1/30)
+
+		rootPart.AssemblyLinearVelocity = Vector3.zero
+		rootPart.CFrame = rootPart.CFrame + (worldDirection * finalSpeed * clampedDt)
+		rootPart.CFrame = CFrame.new(rootPart.Position, rootPart.Position + worldDirection)
+	end)
+
+	table.insert(Connections, antiNoiseConn)
+end)
 
 Groupboxes.Exploits_BypassRight = Tabs.Exploits:AddRightGroupbox("Bypass")
 Groupboxes.Exploits_BypassRight:AddToggle("DisableAnticheat", {
