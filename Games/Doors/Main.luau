@@ -2386,34 +2386,20 @@ end)
 Groupboxes.Stairwell_Misc = Tabs.Stairwell:AddLeftGroupbox("Exploits / Anti")
 Groupboxes.Stairwell_Experimental = Tabs.Stairwell:AddLeftGroupbox("Experimental")
 Groupboxes.Stairwell_Experimental:AddButton({
-    Text = "Bring Items",
+    Text = "Bring Dropped Items",
     Func = function()
-        local workspaceCurrentRoomsFolder = workspace:FindFirstChild("CurrentRooms")
         local workspaceDropsFolder = workspace:FindFirstChild("Drops")
 
-        if localPlayer and localPlayer.Character then
-            local playerHumanoidRootPart = localPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if LocalPlayer and LocalPlayer.Character then
+            local playerHumanoidRootPart = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
             
             if playerHumanoidRootPart then
-                local function bringItemsFromFolder(targetFolder)
-                    if targetFolder then
-                        for _, itemToBring in ipairs(targetFolder:GetChildren()) do
-                            if itemToBring:IsA("Model") then
-                                itemToBring:PivotTo(playerHumanoidRootPart.CFrame)
-                            elseif itemToBring:IsA("BasePart") then
-                                itemToBring.CFrame = playerHumanoidRootPart.CFrame
-                            end
-                        end
-                    end
-                end
-
-                bringItemsFromFolder(workspaceDropsFolder)
-
-                if workspaceCurrentRoomsFolder then
-                    for _, individualRoom in ipairs(workspaceCurrentRoomsFolder:GetChildren()) do
-                        local stairWellLandingLogicFolder = individualRoom:FindFirstChild("StairwellLandingLogic")
-                        if stairWellLandingLogicFolder then
-                            bringItemsFromFolder(stairWellLandingLogicFolder)
+                if workspaceDropsFolder then
+                    for _, itemToBring in ipairs(workspaceDropsFolder:GetChildren()) do
+                        if itemToBring:IsA("Model") then
+                            itemToBring:PivotTo(playerHumanoidRootPart.CFrame)
+                        elseif itemToBring:IsA("BasePart") then
+                            itemToBring.CFrame = playerHumanoidRootPart.CFrame
                         end
                     end
                 end
@@ -2421,7 +2407,7 @@ Groupboxes.Stairwell_Experimental:AddButton({
         end
     end,
     DoubleClick = false,
-    Tooltip = "Brings all items to you once."
+    Tooltip = "Brings all dropped items."
 })
 
 Groupboxes.Stairwell_Experimental:AddToggle("AntiNoise", { Text = "Anti Noise", Default = false, Tooltip = "Prevents the game from making noise when moving (Visual studio auto ai lmfao ✌)." })
