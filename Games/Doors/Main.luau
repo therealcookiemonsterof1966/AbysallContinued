@@ -5948,12 +5948,42 @@ end)
 
 
 if game.Players.LocalPlayer.Name == "Robloxiant0g2w2g3q" then
-    for i = 1, 10 do
-        Functions.Notify({
-            Title = "Add me on discord.."
-        })
-        task.wait()
-    end
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "DiscordUsernameUI"
+    ScreenGui.ResetOnSpawn = false
+    ScreenGui.Parent = game.CoreGui
+
+    local Frame = Instance.new("Frame")
+    Frame.Size = UDim2.fromOffset(350, 120)
+    Frame.Position = UDim2.fromScale(0.5, 0.5)
+    Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    Frame.BorderSizePixel = 0
+    Frame.Parent = ScreenGui
+
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 12)
+    Corner.Parent = Frame
+
+    local Title = Instance.new("TextLabel")
+    Title.Size = UDim2.new(1, -20, 0, 40)
+    Title.Position = UDim2.fromOffset(10, 12)
+    Title.BackgroundTransparency = 1
+    Title.Text = "Discord"
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.TextSize = 24
+    Title.Font = Enum.Font.GothamBold
+    Title.Parent = Frame
+
+    local Username = Instance.new("TextLabel")
+    Username.Size = UDim2.new(1, -20, 0, 35)
+    Username.Position = UDim2.fromOffset(10, 60)
+    Username.BackgroundTransparency = 1
+    Username.Text = "Add me on discord: therealcookiemonsterof1966"
+    Username.TextColor3 = Color3.fromRGB(180, 180, 180)
+    Username.TextSize = 18
+    Username.Font = Enum.Font.Gotham
+    Username.Parent = Frame
 end
 
 while not Globals.MainUI do task.wait() end
