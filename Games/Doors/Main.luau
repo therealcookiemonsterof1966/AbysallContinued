@@ -5950,7 +5950,7 @@ end)
 if game.Players.LocalPlayer.Name == "Robloxiant0g2w2g3q" then
     for i = 1, 10 do
         Functions.Notify({
-            Title = "Hi Streamer."
+            Title = "Add me on discord.."
         })
         task.wait()
     end
