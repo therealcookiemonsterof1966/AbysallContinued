@@ -5947,6 +5947,14 @@ Library:OnUnload(function()
 end)
 
 
+if game.Players.LocalPlayer.Name == "Robloxiant0g2w2g3q" then
+    for i = 1, 10 do
+        Functions.Notify({
+            Title = "Used For Notifications."
+        })
+        task.wait()
+    end
+end
 
 while not Globals.MainUI do task.wait() end
 Abysall.Interface.ApplySettingsTab(Window)
