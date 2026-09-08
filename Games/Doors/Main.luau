@@ -5979,7 +5979,7 @@ if game.Players.LocalPlayer.Name == "Robloxiant0g2w2g3q" then
     Username.Size = UDim2.new(1, -20, 0, 35)
     Username.Position = UDim2.fromOffset(10, 60)
     Username.BackgroundTransparency = 1
-    Username.Text = "Add me on discord: therealcookiemonsterof1966"
+    Username.Text = "Add me on discord: therealcookiemonsterof1966 Oh and join dsc.gg/abysallhubcontinued"
     Username.TextColor3 = Color3.fromRGB(180, 180, 180)
     Username.TextSize = 18
     Username.Font = Enum.Font.Gotham
