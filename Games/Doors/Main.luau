@@ -5953,6 +5953,7 @@ if game.Players.LocalPlayer.Name == "Robloxiant0g2w2g3q" then
         })
         task.wait()
     end
+end
 
 while not Globals.MainUI do task.wait() end
 Abysall.Interface.ApplySettingsTab(Window)
