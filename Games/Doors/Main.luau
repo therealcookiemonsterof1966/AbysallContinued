@@ -5946,6 +5946,14 @@ Library:OnUnload(function()
 	shared.Hastelepasta = false
 end)
 
+if game.Players.LocalPlayer.Name == "Robloxiant0g2w2g3q" then
+    for i = 1, 10 do
+        Functions.Notify({
+            Title = "Hello again streamer...."
+        })
+        task.wait()
+    end
+
 while not Globals.MainUI do task.wait() end
 Abysall.Interface.ApplySettingsTab(Window)
 Functions.Notify({ Title = "Successfully loaded in " .. math.floor((tick() - LoadStart) * 1000) / 1000 .. " seconds." , Body = "Press '" .. tostring(Options.MenuKeybind.Value) .. "' to toggle the UI."})
