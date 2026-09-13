@@ -106,11 +106,10 @@ The license applicable to a particular release is the license distributed with t
 
 Requests for permission to use, modify, redistribute, fork, reproduce, or otherwise use the software outside the permissions granted by this license must be made directly to the Author.
 
+Permission is valid only when explicitly granted by the Author in writing.
+
+Silence, lack of response, or the existence of a publicly accessible copy of the software does not constitute permission.
 
 **Copyright © 2026 TheRealCookieMonsterOf1966. All Rights Reserved.**
 
 **Unauthorized copying, redistribution, forking, or derivative use is prohibited.**
-
-Permission is valid only when explicitly granted by the Author in writing.
-
-Silence, lack of response, or the existence of a publicly accessible copy of the software does not constitute permission.
