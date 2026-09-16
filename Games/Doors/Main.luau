@@ -1516,6 +1516,78 @@ Groupboxes.Debug:AddButton({
 	end
 })
 
+local TpNextDoorConnection
+
+local function getNextClosedDoor()
+	if not Character then return nil end
+
+	local GameData = game:GetService("ReplicatedStorage"):FindFirstChild("GameData")
+	if not GameData then return nil end
+
+	local LatestRoom = GameData:FindFirstChild("LatestRoom")
+	if not LatestRoom then return nil end
+
+	local startRoom = LatestRoom.Value
+	local bestDoor = nil
+	local bestNumber = math.huge
+
+	for _, obj in ipairs(workspace:GetDescendants()) do
+		if obj.Name == "Door" and obj:IsA("Model") then
+			local openAttr = obj:GetAttribute("Open")
+			if openAttr == false or openAttr == nil then
+				local roomModel = obj.Parent
+				local roomNum = tonumber(roomModel and roomModel.Name)
+
+				if roomNum and roomNum >= startRoom and roomNum < bestNumber then
+					bestNumber = roomNum
+					bestDoor = obj
+				end
+			end
+		end
+	end
+
+	return bestDoor
+end
+
+Groupboxes.Debug:AddButton({
+	Text = "Tp Next Door",
+	Tooltip = "Teleports you to the next sequential unopened door.",
+	Func = function()
+		local door = getNextClosedDoor()
+		if door then
+			Character:PivotTo(door:GetPivot())
+		end
+	end
+})
+
+Toggles.TpNextDoor = Groupboxes.Debug:AddToggle("TpNextDoor", {
+	Text = "Auto Tp Next Door",
+	Tooltip = "Continuously teleports you to the next sequential unopened door.",
+	Default = false
+})
+
+Toggles.TpNextDoor:OnChanged(function(TpNextDoorEnabled)
+	if TpNextDoorConnection then
+		task.cancel(TpNextDoorConnection)
+		TpNextDoorConnection = nil
+	end
+
+	if not TpNextDoorEnabled then
+		return
+	end
+
+	TpNextDoorConnection = task.spawn(function()
+		while Toggles.TpNextDoor.Value do
+			local door = getNextClosedDoor()
+			if door and Character then
+				Character:PivotTo(door:GetPivot())
+			end
+			task.wait(0.15)
+		end
+		TpNextDoorConnection = nil
+	end)
+end)
+
 Groupboxes.Exploits_Bypass = Tabs.Exploits:AddLeftGroupbox("Bypass / Solve")
 
 Groupboxes.Exploits_Bypass:AddToggle("BypassGiggle",         { Text = "Bypass Giggle",           Default = false, Tooltip = "Prevents 'Giggle' from attacking you." })
