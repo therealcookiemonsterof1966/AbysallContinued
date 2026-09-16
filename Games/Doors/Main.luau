@@ -3772,6 +3772,7 @@ Groupboxes.Floors_Farming:AddToggle("KnobFarm", {
     Text = "Knob Farm",
     Default = false,
     Tooltip = "Automatically gains knobs for you, dies and revives repeatedly.",
+	Risky = Floor ~= "Ballz",
 })
 
 Groupboxes.Floors_Farming:AddButton({
