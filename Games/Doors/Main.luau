@@ -2595,6 +2595,7 @@ Groupboxes.Exploits_BypassRight:AddToggle("InfCrucifix", {
 	Text = "Infinite Crucifix",
 	Default = false,
 	Tooltip = "Risky! You can die or lose the Crucifix. Recommended to have low ping and stable fps.",
+	Risky = Floor ~= "Ballz",
 })
 
 
