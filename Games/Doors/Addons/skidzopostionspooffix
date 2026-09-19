@@ -1,11 +1,10 @@
 return function(Window)
-    print("142")
+    print("this not even his anymore")
     local Library = Abysall.Interface.Library
     local Toggles = Library.Toggles
 
     local Players = game:GetService("Players")
     local RunService = game:GetService("RunService")
-    local Workspace = game:GetService("Workspace")
 
     local LocalPlayer = Players.LocalPlayer
 
@@ -20,15 +19,8 @@ return function(Window)
     MrPasteGroundGroupbox:AddToggle("skidzopositionspooffix_Enabled", {
         Text = "skidzopositionspooffix",
         Default = true,
-        Tooltip = "Prevents Position Spoof from floating or launching on stairs."
+        Tooltip = "Keeps Position Spoof grounded unless jumping."
     })
-
-    local GroundRaycastParams = RaycastParams.new()
-    GroundRaycastParams.FilterType = Enum.RaycastFilterType.Exclude
-    GroundRaycastParams.RespectCanCollide = true
-    GroundRaycastParams.IgnoreWater = true
-
-    local GroundRaycastFilter = {}
 
     local Connection
 
@@ -57,99 +49,18 @@ return function(Window)
             return
         end
 
-        local State = Humanoid:GetState()
-
-        if State == Enum.HumanoidStateType.Jumping
-            or State == Enum.HumanoidStateType.Climbing
-            or State == Enum.HumanoidStateType.Swimming
-            or State == Enum.HumanoidStateType.Seated
-        then
+        if Humanoid:GetState() == Enum.HumanoidStateType.Jumping then
             return
         end
-
-        table.clear(GroundRaycastFilter)
-        GroundRaycastFilter[#GroundRaycastFilter + 1] = Character
-
-        local Camera = Workspace.CurrentCamera
-
-        if Camera then
-            local MinecartRig = Camera:FindFirstChild("MinecartRig")
-
-            if MinecartRig then
-                GroundRaycastFilter[#GroundRaycastFilter + 1] = MinecartRig
-            end
-        end
-
-        GroundRaycastParams.FilterDescendantsInstances = GroundRaycastFilter
 
         local Velocity = RootPart.AssemblyLinearVelocity
-        local HorizontalVelocity = Vector3.new(
-            Velocity.X,
-            0,
-            Velocity.Z
-        )
 
-        local Speed = HorizontalVelocity.Magnitude
-
-        if Speed < 0.1 then
-            return
-        end
-
-        local Direction = HorizontalVelocity.Unit
-        local LookAhead = math.clamp(
-            Speed * 0.1,
-            1.25,
-            3
-        )
-
-        local RayHeight = 3
-        local RayLength = 10
-
-        local CurrentGround = Workspace:Raycast(
-            RootPart.Position + Vector3.new(0, RayHeight, 0),
-            Vector3.new(0, -RayLength, 0),
-            GroundRaycastParams
-        )
-
-        local ForwardGround = Workspace:Raycast(
-            RootPart.Position
-                + Direction * LookAhead
-                + Vector3.new(0, RayHeight, 0),
-            Vector3.new(0, -RayLength, 0),
-            GroundRaycastParams
-        )
-
-        if not CurrentGround or not ForwardGround then
-            return
-        end
-
-        local GroundDifference =
-            ForwardGround.Position.Y - CurrentGround.Position.Y
-
-        if GroundDifference < -0.08 then
-            local Drop = math.min(-GroundDifference, 5)
-
-            local DownwardVelocity = math.clamp(
-                10 + Drop * 14 + Speed * 0.4,
-                12,
-                45
+        if Velocity.Y > -8 then
+            RootPart.AssemblyLinearVelocity = Vector3.new(
+                Velocity.X,
+                -8,
+                Velocity.Z
             )
-
-            if Velocity.Y > -DownwardVelocity then
-                RootPart.AssemblyLinearVelocity = Vector3.new(
-                    Velocity.X,
-                    -DownwardVelocity,
-                    Velocity.Z
-                )
-            end
-        elseif GroundDifference > 0.08 then
-            if Velocity.Y > 3 then
-                RootPart.AssemblyLinearVelocity = Vector3.new(
-                    Velocity.X,
-                    0,
-                    Velocity.Z
-                )
-            end
         end
     end)
 
