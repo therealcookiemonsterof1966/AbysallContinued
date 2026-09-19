@@ -1,0 +1,175 @@
+return function(Window)
+    if not POA then
+        Functions.Notify({
+            Title = "skidzopositionspooffix",
+            Body = "Position Offset V2 is not available.",
+            Time = 5
+        })
+        return
+    end
+
+    if not POANoclip or not POAVelocityManipulation then
+        Functions.Notify({
+            Title = "skidzopositionspooffix",
+            Body = "Required Position Offset functions are not available.",
+            Time = 5
+        })
+        return
+    end
+
+    local MrPasteGroundTab = Window:AddTab("skidzopositionspooffix", "move-down")
+    local MrPasteGroundGroupbox = MrPasteGroundTab:AddLeftGroupbox("skidzopositionspooffix")
+
+    MrPasteGroundGroupbox:AddToggle("MrPasteGroundAdhesion_Enabled", {
+        Text = "skidzopositionspooffix",
+        Default = false,
+        Tooltip = "Fixes Position Offset V2 ground adhesion."
+    })
+
+    local MrPasteGroundParams = RaycastParams.new()
+    MrPasteGroundParams.FilterType = Enum.RaycastFilterType.Exclude
+    MrPasteGroundParams.RespectCanCollide = true
+    MrPasteGroundParams.IgnoreWater = true
+
+    local MrPasteGroundFilter = {}
+
+    local MrPasteGroundState = {
+        WasEnabled = false,
+        EnabledAt = 0,
+    }
+
+    local function MrPasteGroundAdhesion(Enabled)
+        if not Enabled then
+            MrPasteGroundState.WasEnabled = false
+            return
+        end
+
+        if not MrPasteGroundState.WasEnabled then
+            MrPasteGroundState.WasEnabled = true
+            MrPasteGroundState.EnabledAt = os.clock()
+        end
+
+        local Root, Humanoid = POA.Root, POA.Humanoid
+
+        if not (Root and Root.Parent and Humanoid and Humanoid.Parent) then
+            return
+        end
+
+        if Humanoid.Health <= 0 or POANoclip() or POAVelocityManipulation() then
+            return
+        end
+
+        local State = Humanoid:GetState()
+
+        if State == Enum.HumanoidStateType.Jumping
+            or State == Enum.HumanoidStateType.Freefall
+            or State == Enum.HumanoidStateType.Climbing
+            or State == Enum.HumanoidStateType.Swimming
+            or State == Enum.HumanoidStateType.Seated
+        then
+            return
+        end
+
+        table.clear(MrPasteGroundFilter)
+
+        if POA.Character then
+            MrPasteGroundFilter[#MrPasteGroundFilter + 1] = POA.Character
+        end
+
+        if Camera and Camera:FindFirstChild("MinecartRig") then
+            MrPasteGroundFilter[#MrPasteGroundFilter + 1] = Camera.MinecartRig
+        end
+
+        MrPasteGroundParams.FilterDescendantsInstances = MrPasteGroundFilter
+
+        local V = Root.AssemblyLinearVelocity
+        local Horizontal = Vector3.new(V.X, 0, V.Z)
+        local Speed = Horizontal.Magnitude
+
+        local Ahead = Speed > 0.5
+            and Horizontal.Unit * math.clamp(Speed * 0.075, 0.75, 3.25)
+            or Vector3.zero
+
+        local CastUp = 2.25
+        local CastDown = 8.5
+
+        local Here = workspace:Raycast(
+            Root.Position + Vector3.new(0, CastUp, 0),
+            Vector3.new(0, -(CastUp + CastDown), 0),
+            MrPasteGroundParams
+        )
+
+        local Forward = workspace:Raycast(
+            Root.Position + Ahead + Vector3.new(0, CastUp, 0),
+            Vector3.new(0, -(CastUp + CastDown), 0),
+            MrPasteGroundParams
+        )
+
+        local Ground = Forward or Here
+
+        if not Ground then
+            return
+        end
+
+        local Grace = os.clock() - MrPasteGroundState.EnabledAt < 0.18
+
+        if V.Y > (Grace and 3 or 7) then
+            Root.AssemblyLinearVelocity = Vector3.new(V.X, 0, V.Z)
+            V = Root.AssemblyLinearVelocity
+        end
+
+        if Forward and Here then
+            local Drop = Here.Position.Y - Forward.Position.Y
+
+            if Drop > 0.08 and Drop < 5.5 and V.Y > -42 then
+                local FollowY = -math.clamp(
+                    10 + Speed * 0.42 + Drop * 12,
+                    12,
+                    42
+                )
+
+                Root.AssemblyLinearVelocity = Vector3.new(
+                    V.X,
+                    math.min(V.Y, FollowY),
+                    V.Z
+                )
+            end
+        elseif Forward and V.Y > -28 then
+            Root.AssemblyLinearVelocity = Vector3.new(
+                V.X,
+                math.min(V.Y, -18),
+                V.Z
+            )
+        end
+    end
+
+    Library.Toggles.MrPasteGroundAdhesion_Enabled:OnChanged(function(Value)
+        if not Value then
+            MrPasteGroundAdhesion(false)
+            return
+        end
+
+        MrPasteGroundState.WasEnabled = false
+        MrPasteGroundState.EnabledAt = os.clock()
+
+        Functions.Notify({
+            Title = "skidzopositionspooffix",
+            Body = "skidzopositionspooffix enabled.",
+            Time = 3
+        })
+    end)
+
+    task.spawn(function()
+        while true do
+            task.wait()
+
+            local Toggle = Library.Toggles.MrPasteGroundAdhesion_Enabled
+
+            if Toggle and Toggle.Value then
+                MrPasteGroundAdhesion(true)
+            else
+                MrPasteGroundAdhesion(false)
+            end
+        end
+    end)
+end
