@@ -12,15 +12,14 @@ return function(Window)
         "skidzopositionspooffix",
         "move-down"
     )
-    print("balls")
 
     local MrPasteGroundGroupbox =
         MrPasteGroundTab:AddLeftGroupbox("skidzopositionspooffix")
 
     MrPasteGroundGroupbox:AddToggle("skidzopositionspooffix_Enabled", {
         Text = "skidzopositionspooffix",
-        Default = false,
-        Tooltip = "Fixes ground adhesion while Position Spoof is enabled."
+        Default = true,
+        Tooltip = "Enables or disables the Position Spoof ground adhesion fix."
     })
 
     local POAGroundParams = RaycastParams.new()
@@ -167,19 +166,24 @@ return function(Window)
         end
     end
 
+    Toggles.PositionSpoof:OnChanged(function(Value)
+        if Value then
+            POAGroundState.WasEnabled = false
+            POAGroundState.EnabledAt = os.clock()
+        else
+            POAGroundAdhesion(false)
+        end
+    end)
+
     Toggles.skidzopositionspooffix_Enabled:OnChanged(function(Value)
         if not Value then
             POAGroundAdhesion(false)
-            return
+        elseif Toggles.PositionSpoof
+            and Toggles.PositionSpoof.Value
+        then
+            POAGroundState.WasEnabled = false
+            POAGroundState.EnabledAt = os.clock()
         end
-
-        POAGroundState.WasEnabled = false
-        POAGroundState.EnabledAt = os.clock()
-
-        Library:Notify(
-            "skidzopositionspooffix",
-            "skidzopositionspooffix enabled."
-        )
     end)
 
     local Connection
