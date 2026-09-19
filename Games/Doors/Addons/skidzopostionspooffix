@@ -19,52 +19,40 @@ return function(Window)
     MrPasteGroundGroupbox:AddToggle("skidzopositionspooffix_Enabled", {
         Text = "skidzopositionspooffix",
         Default = true,
-        Tooltip = "Enables or disables the Position Spoof ground adhesion fix."
+        Tooltip = "Uses the ground below you to keep Position Spoof grounded."
     })
 
-    local POAGroundParams = RaycastParams.new()
-    POAGroundParams.FilterType = Enum.RaycastFilterType.Exclude
-    POAGroundParams.RespectCanCollide = true
-    POAGroundParams.IgnoreWater = true
+    local GroundRaycastParams = RaycastParams.new()
+    GroundRaycastParams.FilterType = Enum.RaycastFilterType.Exclude
+    GroundRaycastParams.RespectCanCollide = true
+    GroundRaycastParams.IgnoreWater = true
 
-    local POAGroundFilter = {}
+    local GroundRaycastFilter = {}
 
-    local POAGroundState = {
-        WasEnabled = false,
-        EnabledAt = 0
-    }
+    local Connection
 
-    local function GetCharacter()
+    Connection = RunService.RenderStepped:Connect(function()
+        local FixToggle = Toggles.skidzopositionspooffix_Enabled
+        local PositionSpoofToggle = Toggles.PositionSpoof
+
+        if not FixToggle
+            or not FixToggle.Value
+            or not PositionSpoofToggle
+            or not PositionSpoofToggle.Value
+        then
+            return
+        end
+
         local Character = LocalPlayer.Character
 
         if not Character or not Character.Parent then
-            return nil, nil, nil
+            return
         end
 
         local Humanoid = Character:FindFirstChildOfClass("Humanoid")
         local RootPart = Character:FindFirstChild("HumanoidRootPart")
 
-        return Character, Humanoid, RootPart
-    end
-
-    local function POAGroundAdhesion(Enabled)
-        if not Enabled then
-            POAGroundState.WasEnabled = false
-            return
-        end
-
-        if not POAGroundState.WasEnabled then
-            POAGroundState.WasEnabled = true
-            POAGroundState.EnabledAt = os.clock()
-        end
-
-        local Character, Humanoid, RootPart = GetCharacter()
-
-        if not (Character and Humanoid and RootPart) then
-            return
-        end
-
-        if Humanoid.Health <= 0 then
+        if not Humanoid or not RootPart or Humanoid.Health <= 0 then
             return
         end
 
@@ -79,146 +67,36 @@ return function(Window)
             return
         end
 
-        table.clear(POAGroundFilter)
+        table.clear(GroundRaycastFilter)
+        GroundRaycastFilter[#GroundRaycastFilter + 1] = Character
 
-        POAGroundFilter[#POAGroundFilter + 1] = Character
+        GroundRaycastParams.FilterDescendantsInstances = GroundRaycastFilter
 
-        local Camera = Workspace.CurrentCamera
+        local RayOrigin = RootPart.Position + Vector3.new(0, 2, 0)
+        local RayDirection = Vector3.new(0, -8, 0)
 
-        if Camera then
-            local MinecartRig = Camera:FindFirstChild("MinecartRig")
-
-            if MinecartRig then
-                POAGroundFilter[#POAGroundFilter + 1] = MinecartRig
-            end
-        end
-
-        POAGroundParams.FilterDescendantsInstances = POAGroundFilter
-
-        local V = RootPart.AssemblyLinearVelocity
-        local Horizontal = Vector3.new(V.X, 0, V.Z)
-        local Speed = Horizontal.Magnitude
-
-        local Ahead = Speed > 0.5
-            and Horizontal.Unit * math.clamp(Speed * 0.075, 0.75, 3.25)
-            or Vector3.zero
-
-        local CastUp = 2.25
-        local CastDown = 8.5
-
-        local Here = Workspace:Raycast(
-            RootPart.Position + Vector3.new(0, CastUp, 0),
-            Vector3.new(0, -(CastUp + CastDown), 0),
-            POAGroundParams
+        local Ground = Workspace:Raycast(
+            RayOrigin,
+            RayDirection,
+            GroundRaycastParams
         )
-
-        local Forward = Workspace:Raycast(
-            RootPart.Position + Ahead + Vector3.new(0, CastUp, 0),
-            Vector3.new(0, -(CastUp + CastDown), 0),
-            POAGroundParams
-        )
-
-        local Ground = Forward or Here
 
         if not Ground then
             return
         end
 
-        local Grace =
-            os.clock() - POAGroundState.EnabledAt < 0.18
+        local GroundY = Ground.Position.Y
+        local RootBottomY = RootPart.Position.Y - (RootPart.Size.Y * 0.5)
+        local Difference = RootBottomY - GroundY
 
-        if V.Y > (Grace and 3 or 7) then
-            RootPart.AssemblyLinearVelocity = Vector3.new(
-                V.X,
+        if Difference > 0.02 then
+            local Offset = math.min(Difference, 0.15)
+
+            RootPart.CFrame = RootPart.CFrame * CFrame.new(
                 0,
-                V.Z
+                -Offset,
+                0
             )
-
-            V = RootPart.AssemblyLinearVelocity
-        end
-
-        if Forward and Here then
-            local Drop =
-                Here.Position.Y - Forward.Position.Y
-
-            if Drop > 0.08
-                and Drop < 5.5
-                and V.Y > -42
-            then
-                local FollowY = -math.clamp(
-                    10 + Speed * 0.42 + Drop * 12,
-                    12,
-                    42
-                )
-
-                RootPart.AssemblyLinearVelocity = Vector3.new(
-                    V.X,
-                    math.min(V.Y, FollowY),
-                    V.Z
-                )
-            end
-        elseif Forward and V.Y > -28 then
-            RootPart.AssemblyLinearVelocity = Vector3.new(
-                V.X,
-                math.min(V.Y, -18),
-                V.Z
-            )
-        end
-    end
-
-    Toggles.PositionSpoof:OnChanged(function(Value)
-        if Value then
-            POAGroundState.WasEnabled = false
-            POAGroundState.EnabledAt = os.clock()
-        else
-            POAGroundAdhesion(false)
-        end
-    end)
-
-    Toggles.skidzopositionspooffix_Enabled:OnChanged(function(Value)
-        if not Value then
-            POAGroundAdhesion(false)
-        elseif Toggles.PositionSpoof
-            and Toggles.PositionSpoof.Value
-        then
-            POAGroundState.WasEnabled = false
-            POAGroundState.EnabledAt = os.clock()
-        end
-    end)
-
-    local Connection
-
-    Connection = RunService.RenderStepped:Connect(function()
-        local FixToggle =
-            Toggles.skidzopositionspooffix_Enabled
-
-        local PositionSpoofToggle =
-            Toggles.PositionSpoof
-
-        if not FixToggle
-            or not FixToggle.Value
-            or not PositionSpoofToggle
-            or not PositionSpoofToggle.Value
-        then
-            POAGroundAdhesion(false)
-            return
-        end
-
-        POAGroundAdhesion(true)
-    end)
-
-    LocalPlayer.CharacterRemoving:Connect(function()
-        POAGroundState.WasEnabled = false
-    end)
-
-    LocalPlayer.CharacterAdded:Connect(function()
-        POAGroundState.WasEnabled = false
-
-        if Toggles.skidzopositionspooffix_Enabled.Value
-            and Toggles.PositionSpoof
-            and Toggles.PositionSpoof.Value
-        then
-            POAGroundState.EnabledAt = os.clock()
         end
     end)
 
@@ -226,8 +104,6 @@ return function(Window)
         and type(Abysall.Addon.OnUnload) == "function"
     then
         Abysall.Addon.OnUnload(function()
-            POAGroundAdhesion(false)
-
             if Connection then
                 Connection:Disconnect()
                 Connection = nil
