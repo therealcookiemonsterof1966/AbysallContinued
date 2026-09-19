@@ -19,7 +19,7 @@ return function(Window)
     MrPasteGroundGroupbox:AddToggle("skidzopositionspooffix_Enabled", {
         Text = "skidzopositionspooffix",
         Default = true,
-        Tooltip = "Uses the ground below you to keep Position Spoof grounded."
+        Tooltip = "Prevents Position Spoof from floating or launching on stairs."
     })
 
     local GroundRaycastParams = RaycastParams.new()
@@ -59,7 +59,6 @@ return function(Window)
         local State = Humanoid:GetState()
 
         if State == Enum.HumanoidStateType.Jumping
-            or State == Enum.HumanoidStateType.Freefall
             or State == Enum.HumanoidStateType.Climbing
             or State == Enum.HumanoidStateType.Swimming
             or State == Enum.HumanoidStateType.Seated
@@ -70,33 +69,95 @@ return function(Window)
         table.clear(GroundRaycastFilter)
         GroundRaycastFilter[#GroundRaycastFilter + 1] = Character
 
+        local Camera = Workspace.CurrentCamera
+
+        if Camera then
+            local MinecartRig = Camera:FindFirstChild("MinecartRig")
+
+            if MinecartRig then
+                GroundRaycastFilter[#GroundRaycastFilter + 1] = MinecartRig
+            end
+        end
+
         GroundRaycastParams.FilterDescendantsInstances = GroundRaycastFilter
 
-        local RayOrigin = RootPart.Position + Vector3.new(0, 2, 0)
-        local RayDirection = Vector3.new(0, -8, 0)
-
-        local Ground = Workspace:Raycast(
-            RayOrigin,
-            RayDirection,
-            GroundRaycastParams
+        local Velocity = RootPart.AssemblyLinearVelocity
+        local HorizontalVelocity = Vector3.new(
+            Velocity.X,
+            0,
+            Velocity.Z
         )
 
-        if not Ground then
+        local Speed = HorizontalVelocity.Magnitude
+
+        if Speed < 0.1 then
             return
         end
 
-        local GroundY = Ground.Position.Y
-        local RootBottomY = RootPart.Position.Y - (RootPart.Size.Y * 0.5)
-        local Difference = RootBottomY - GroundY
+        local Direction = HorizontalVelocity.Unit
+        local LookAhead = math.clamp(
+            Speed * 0.12,
+            1.5,
+            4
+        )
 
-        if Difference > 0.02 then
-            local Offset = math.min(Difference, 0.15)
+        local RayHeight = 3
+        local RayLength = 9
 
-            RootPart.CFrame = RootPart.CFrame * CFrame.new(
-                0,
-                -Offset,
-                0
+        local CurrentGround = Workspace:Raycast(
+            RootPart.Position + Vector3.new(0, RayHeight, 0),
+            Vector3.new(0, -RayLength, 0),
+            GroundRaycastParams
+        )
+
+        local ForwardGround = Workspace:Raycast(
+            RootPart.Position
+                + Direction * LookAhead
+                + Vector3.new(0, RayHeight, 0),
+            Vector3.new(0, -RayLength, 0),
+            GroundRaycastParams
+        )
+
+        if not CurrentGround or not ForwardGround then
+            return
+        end
+
+        local CurrentY = CurrentGround.Position.Y
+        local ForwardY = ForwardGround.Position.Y
+        local GroundDifference = ForwardY - CurrentY
+
+        if GroundDifference < -0.08 then
+            local Drop = math.min(-GroundDifference, 5)
+
+            local DownwardVelocity = math.clamp(
+                8 + Drop * 12 + Speed * 0.35,
+                10,
+                42
             )
+
+            if Velocity.Y > -DownwardVelocity then
+                RootPart.AssemblyLinearVelocity = Vector3.new(
+                    Velocity.X,
+                    -DownwardVelocity,
+                    Velocity.Z
+                )
+            end
+        elseif GroundDifference > 0.08 then
+            local Rise = math.min(GroundDifference, 3)
+
+            local UpwardVelocity = math.clamp(
+                Rise * 10 + Speed * 0.2,
+                4,
+                18
+            )
+
+            if Velocity.Y < UpwardVelocity then
+                RootPart.AssemblyLinearVelocity = Vector3.new(
+                    Velocity.X,
+                    UpwardVelocity,
+                    Velocity.Z
+                )
+            end
         end
     end)
 
