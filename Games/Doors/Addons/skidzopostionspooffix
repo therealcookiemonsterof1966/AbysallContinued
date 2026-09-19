@@ -1,4 +1,5 @@
 return function(Window)
+    print("ballsack v3")
     local Library = Abysall.Interface.Library
     local Toggles = Library.Toggles
 
@@ -96,13 +97,13 @@ return function(Window)
 
         local Direction = HorizontalVelocity.Unit
         local LookAhead = math.clamp(
-            Speed * 0.12,
-            1.5,
-            4
+            Speed * 0.1,
+            1.25,
+            3
         )
 
         local RayHeight = 3
-        local RayLength = 9
+        local RayLength = 10
 
         local CurrentGround = Workspace:Raycast(
             RootPart.Position + Vector3.new(0, RayHeight, 0),
@@ -122,17 +123,16 @@ return function(Window)
             return
         end
 
-        local CurrentY = CurrentGround.Position.Y
-        local ForwardY = ForwardGround.Position.Y
-        local GroundDifference = ForwardY - CurrentY
+        local GroundDifference =
+            ForwardGround.Position.Y - CurrentGround.Position.Y
 
         if GroundDifference < -0.08 then
             local Drop = math.min(-GroundDifference, 5)
 
             local DownwardVelocity = math.clamp(
-                8 + Drop * 12 + Speed * 0.35,
-                10,
-                42
+                10 + Drop * 14 + Speed * 0.4,
+                12,
+                45
             )
 
             if Velocity.Y > -DownwardVelocity then
@@ -143,18 +143,10 @@ return function(Window)
                 )
             end
         elseif GroundDifference > 0.08 then
-            local Rise = math.min(GroundDifference, 3)
-
-            local UpwardVelocity = math.clamp(
-                Rise * 10 + Speed * 0.2,
-                4,
-                18
-            )
-
-            if Velocity.Y < UpwardVelocity then
+            if Velocity.Y > 0 then
                 RootPart.AssemblyLinearVelocity = Vector3.new(
                     Velocity.X,
-                    UpwardVelocity,
+                    0,
                     Velocity.Z
                 )
             end
