@@ -1,13 +1,18 @@
 return function(Window)
     local LatestChangelog = {
         "5/9/2026",
-
+		
 		-- Green = Added
-		"<font color='rgb(0, 255, 0)'>+ Added StemsEntity (Balls), Noise & Creak entities</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added DinkyLamp, BottleCrate, GweenSodaPack, BrokenMonitor & JerryCan</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Honcho support</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Stairwell prompt ignores</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Herobrine</font>",
+		"<font color='rgb(0, 255, 0)'>+ NEILS HUB STOLE FROM ABYSALL HUB CONTINUED!</font>",
+		"<font color='rgb(0, 255, 0)'>+ USE THE ORRIGNAL SCRIPT HERE: dsc.gg/abysallhubcontinued!</font>",
+		"<font color='rgb(0, 255, 0)'>+ NEILS HUB STOLE FROM ABYSALL HUB CONTINUED!</font>",
+		"<font color='rgb(0, 255, 0)'>+ NEILS HUB STOLE FROM ABYSALL HUB CONTINUED!</font>",
+		"<font color='rgb(0, 255, 0)'>+ USE THE ORRIGNAL SCRIPT HERE: dsc.gg/abysallhubcontinued!</font>",
+		"<font color='rgb(0, 255, 0)'>+ NEILS HUB STOLE FROM ABYSALL HUB CONTINUED!</font>",
+
+		"<font color='rgb(0, 255, 0)'>+ ignore this if u are my fellow abysall user</font>",
+
+
 
 
 		"<font color='rgb(255, 255, 0)'>~ Updated Sally notification message</font>",
