@@ -123,4 +123,20 @@ return function(Window)
 	SaveManager:BuildConfigSection(SettingsTab)
 	ThemeManager:ApplyToTab(SettingsTab)
 	SaveManager:LoadAutoloadConfig()
+
+	local Month = os.date("*t").month
+
+	local SeasonalTheme = ({
+		[1] = "Nya~!",
+		[2] = "Valentines",
+		[3] = "St. Patrick's Day",
+		[4] = "Easter",
+		[10] = "Spooky Scary Skeletons",
+		[11] = "Thanksgiving",
+		[12] = "Christmas",
+	})[Month]
+
+	if SeasonalTheme then
+		ThemeManager:ApplyTheme(SeasonalTheme)
+	end
 end
