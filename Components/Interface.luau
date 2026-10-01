@@ -44,22 +44,5 @@ Interface.ThemeManager.BuiltInThemes = {
 	["Christmas"] = { 27, { MainColor = "070805", FontFace = "Code", FontColor = "ffffff", OutlineColor = "000000", BackgroundColor = "000000", BackgroundImage = "89924308622883", AccentColor = "242599" } },
 }
 
-local Month = os.date("*t").month
-
-if Month == 1 then
-	Interface.ThemeManager:ApplyTheme("Nya~!")
-elseif Month == 2 then
-	Interface.ThemeManager:ApplyTheme("Valentines")
-elseif Month == 3 then
-	Interface.ThemeManager:ApplyTheme("St. Patrick's Day")
-elseif Month == 4 then
-	Interface.ThemeManager:ApplyTheme("Easter")
-elseif Month == 10 then
-	Interface.ThemeManager:ApplyTheme("Spooky Scary Skeletons")
-elseif Month == 11 then
-	Interface.ThemeManager:ApplyTheme("Thanksgiving")
-elseif Month == 12 then
-	Interface.ThemeManager:ApplyTheme("Christmas")
-end
 
 return Interface
