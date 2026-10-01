@@ -33,5 +33,6 @@ Interface.ThemeManager.BuiltInThemes = {
 	["Oceanic Next"]   = { 17, { FontColor = "d8dee9", MainColor = "1b2b34", AccentColor = "6699cc", BackgroundColor = "16232a", OutlineColor = "343d46" } },
 	["Material"]       = { 18, { FontColor = "eeffff", MainColor = "212121", AccentColor = "82aaff", BackgroundColor = "151515", OutlineColor = "424242" } },
 }
+Interface.ThemeManager:SetTheme("Spooky Scary Skeletons")
 
 return Interface
