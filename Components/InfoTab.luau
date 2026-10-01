@@ -98,6 +98,7 @@ return function(Window)
 
 	local Scripts = InfoTab:AddLeftGroupbox("Scripts")
 	Scripts:AddButton("InfiniteYield",         { Text = "Infinite Yield",           Default = false, Tooltip = "Runs infinite yield.", 	Func = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))() end })
+	Scripts:AddButton("Dex",         { Text = "Dex",           Default = false, Tooltip = "Runs Dex.", 	Func = function() loadstring(game:HttpGet("https://github.com/AZYsGithub/DexPlusPlus/releases/latest/download/out.lua"))() Library:Notify("Please wait.") end })
 
 
     local Community = InfoTab:AddLeftGroupbox("Community")
