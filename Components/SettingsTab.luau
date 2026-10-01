@@ -137,6 +137,14 @@ return function(Window)
 	})[Month]
 
 	if SeasonalTheme then
-		ThemeManager:ApplyTheme(SeasonalTheme)
+		local Success, Error = ThemeManager:ApplyTheme(SeasonalTheme)
+
+		if not Success then
+			Library:Notify({
+				Title = "Seasonal Theme",
+				Description = "Failed to apply " .. SeasonalTheme .. ": " .. tostring(Error),
+				Time = 5
+			})
+		end
 	end
 end
