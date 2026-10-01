@@ -131,7 +131,7 @@ return function(Window)
 		[2] = "Valentines",
 		[3] = "St. Patrick's Day",
 		[4] = "Easter",
-		[10] = "Christmas",
+		[10] = "Spooky Scary Skeletons",
 		[11] = "Thanksgiving",
 		[12] = "Christmas",
 	})[Month]
