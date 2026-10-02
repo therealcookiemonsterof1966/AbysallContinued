@@ -2,8 +2,9 @@ while not game:IsLoaded() do
 	task.wait(1)
 end
 
-print("Abysall Hub death farm for DOORS, created by FireBacon (bocaj111004)")
+print("Orriginal Abysall Hub death farm for DOORS, created by FireBacon (bocaj111004)")
 print("dsc.gg/abysallhub")
+print("dsc.gg/abysallhubcontinued")
 
 local Services = setmetatable({}, {
 	__index = function(self, Key)
