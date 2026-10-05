@@ -2410,7 +2410,7 @@ Groupboxes.Stairwell_Experimental:AddButton({
     Tooltip = "Brings all dropped items."
 })
 
-Groupboxes.Stairwell_Experimental:AddToggle("AntiNoise", { Text = "Anti Noise", Default = false, Tooltip = "Prevents the game from making noise when moving (Visual studio auto ai lmfao ✌)." })
+-- Groupboxes.Stairwell_Experimental:AddToggle("AntiNoise", { Text = "Anti Noise", Default = false, Tooltip = "Prevents the game from making noise when moving (Visual studio auto ai lmfao ✌)." })
 
 Toggles.AntiNoise:OnChanged(function(value)
 	for i, conn in ipairs(Connections) do
